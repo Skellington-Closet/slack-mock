@@ -8,11 +8,12 @@ web.calls = []
 web._ = {}
 
 web._.init = function () {
+  // Slack accepts both GET and POST requests
   nock('https://slack.com/api')
     .persist()
     .get(/.*/)
     .query(true)
-    .reply(reply)
+    .reply(reply) // TODO test GET requests
 
     .post(/.*/, () => true)
     .reply(reply)

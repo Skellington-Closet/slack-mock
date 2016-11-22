@@ -3,28 +3,28 @@
 const webResponses = module.exports
 const rtm = require('./rtm')
 const logger = require('../lib/logger')
-let userOverrides = {}
+let customResponses = {}
 
 webResponses._ = {}
 
 webResponses.addResponse = function (cfg) {
-  if (!userOverrides[cfg.action]) {
-    userOverrides[cfg.action] = []
+  if (!customResponses[cfg.action]) {
+    customResponses[cfg.action] = []
   }
 
-  userOverrides[cfg.action].push({
+  customResponses[cfg.action].push({
     status: cfg.status || 200,
     body: cfg.body || {ok: true},
-    header: cfg.header || {}
+    headers: cfg.headers || {}
   })
 }
 
 webResponses._.getResponse = function (action) {
   let response = {status: 200, body: {ok: true}}
 
-  if (userOverrides[action] && userOverrides[action].length) {
-    response = userOverrides[action].shift()
-    logger.debug('responding with override', response)
+  if (customResponses[action] && customResponses[action].length) {
+    response = customResponses[action].shift()
+    logger.debug('responding to web api with override', response)
   }
 
   if (action === 'rtm.start' && response.body.ok) {
@@ -35,6 +35,6 @@ webResponses._.getResponse = function (action) {
 }
 
 webResponses._.reset = function () {
-  userOverrides = {}
+  customResponses = {}
 }
 

@@ -11,9 +11,34 @@ rtm._ = {} // for internal state that won't be exposed
 
 rtm._.init = function (config) {
   rtm._.url = `ws://localhost:${config.rtmPort}`
-  const wss = new WebSocketServer({ port: config.rtmPort })
+  rtm._.connected = new Promise((resolve) => {
+    setUpWebsocketServer(config.rtmPort, resolve)
+  })
+}
 
-  logger.info(`starting RTM server on port ${config.rtmPort}`)
+rtm.reset = function () {
+  // in place reset
+  rtm.calls.splice(0, rtm.calls.length)
+}
+
+rtm.send = function (message, msDelay) {
+  return rtm._.connected
+    .then(() => {
+      ws.send(JSON.stringify(message))
+      return delay(msDelay || 100)
+    })
+}
+
+function delay (ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
+function setUpWebsocketServer (port, connectedCallback) {
+  const wss = new WebSocketServer({ port: port })
+
+  logger.info(`starting RTM server on port ${port}`)
 
   wss.on('connection', (websock) => {
     ws = websock
@@ -32,22 +57,7 @@ rtm._.init = function (config) {
       }
     })
 
-    logger.info(`RTM connected on port ${config.rtmPort}`)
-  })
-}
-
-rtm.reset = function () {
-  // in place reset
-  rtm.calls.splice(0, rtm.calls.length)
-}
-
-rtm.send = function (message, msDelay) {
-  ws.send(JSON.stringify(message))
-  return delay(msDelay || 100)
-}
-
-function delay (ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
+    logger.info(`RTM connected on port ${port}`)
+    connectedCallback()
   })
 }

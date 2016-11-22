@@ -1,0 +1,22 @@
+{
+  "name": "slack-mock",
+  "version": "0.0.0",
+  "description": "Slack API mocker",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard index.js mocker/*.js lib/*.js --fix"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "nock": "^9.0.2",
+    "qs": "^6.3.0",
+    "request": "^2.79.0",
+    "skellington": "^1.0.0",
+    "winston": "^2.3.0",
+    "ws": "^1.1.1"
+  },
+  "devDependencies": {
+    "standard": "^8.5.0"
+  }
+}

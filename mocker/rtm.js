@@ -3,6 +3,7 @@
 const rtm = module.exports
 const WebSocketServer = require('ws').Server
 const logger = require('../lib/logger')
+const clients = []
 let wss
 
 rtm.calls = []
@@ -19,6 +20,8 @@ rtm._.init = function (config) {
 rtm.reset = function () {
   // in place reset
   rtm.calls.splice(0, rtm.calls.length)
+  clients.forEach((client) => client.close())
+  clients.splice(0, clients.length)
 }
 
 rtm.send = function (message, msDelay) {
@@ -40,20 +43,21 @@ function delay (ms) {
 }
 
 function setUpWebsocketServer (port, connectedCallback) {
-  wss = new WebSocketServer({ port: port, clientTracking: true })
+  wss = new WebSocketServer({ port: port })
 
   logger.info(`starting RTM server on port ${port}`)
 
-  wss.on('connection', (websock) => {
+  wss.on('connection', (client) => {
+    clients.push(client)
 
-    websock.on('message', recordMessage)
+    client.on('message', recordMessage)
 
     logger.info(`RTM connected on port ${port}`)
     connectedCallback()
   })
 }
 
-function recordMessage(message) {
+function recordMessage (message) {
   logger.debug('message received')
   logger.debug(message)
 

@@ -3,6 +3,7 @@
 const rtm = require('./mocker/rtm')
 const web = require('./mocker/web')
 const incomingWebhooks = require('./mocker/incoming-webhooks')
+const outgoingWebhooks = require('./mocker/outgoing-webhooks')
 const logger = require('./lib/logger')
 let instance
 
@@ -38,10 +39,16 @@ module.exports = function (config) {
       reset: incomingWebhooks.reset.bind(incomingWebhooks),
       calls: incomingWebhooks.calls
     },
+    outgoingWebhooks: {
+      send: outgoingWebhooks.send.bind(outgoingWebhooks),
+      reset: outgoingWebhooks.reset.bind(outgoingWebhooks),
+      calls: outgoingWebhooks.calls
+    },
     reset: function () {
       web.reset()
       rtm.reset()
       incomingWebhooks.reset()
+      outgoingWebhooks.reset()
     }
   }
 

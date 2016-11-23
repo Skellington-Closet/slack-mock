@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const web = module.exports
 const nock = require('nock')
@@ -12,6 +12,16 @@ web.calls = []
 web._ = {}
 
 web._.init = function () {
+  // for OAuth
+  nock('https://slack.com/oauth/authorize')
+    .persist()
+    .get(/.*/)
+    .query(true)
+    .reply(reply)
+
+    .post(/.*/, () => true)
+    .reply(reply)
+
   // Slack accepts both GET and POST requests
   nock('https://slack.com/api')
     .persist()
@@ -61,7 +71,7 @@ function reply (uri, requestBody) {
   ]
 }
 
-function getResponse(action) {
+function getResponse (action) {
   let response = {status: 200, body: {ok: true}}
 
   if (customResponses[action] && customResponses[action].length) {

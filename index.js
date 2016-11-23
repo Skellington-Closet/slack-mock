@@ -2,13 +2,10 @@
 
 const rtm = require('./mocker/rtm')
 const web = require('./mocker/web')
-const responses = require('./mocker/web-responses')
 const incomingWebhooks = require('./mocker/incoming-webhooks')
 const logger = require('./lib/logger')
 let instance
 
-// TODO make sure everything is stateless
-// use classes
 module.exports = function (config) {
   if (instance) {
     return instance
@@ -26,7 +23,7 @@ module.exports = function (config) {
   instance = {
     web: {
       reset: web.reset.bind(web),
-      addResponse: responses.addResponse.bind(responses),
+      addResponse: web.addResponse.bind(web),
       calls: web.calls
     },
     rtm: {
@@ -44,6 +41,7 @@ module.exports = function (config) {
     reset: function () {
       web.reset()
       rtm.reset()
+      incomingWebhooks.reset()
     }
   }
 

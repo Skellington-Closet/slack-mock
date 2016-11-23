@@ -1,3 +1,5 @@
+'use strict';
+
 // mockers for:
 // * events api: no response
 // * slash commands: receives immediate response and sends response url, immediate response must be received within 3 seconds, response url within 30 minutes

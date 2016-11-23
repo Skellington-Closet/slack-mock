@@ -3,7 +3,7 @@
 const rtm = module.exports
 const WebSocketServer = require('ws').Server
 const logger = require('../lib/logger')
-let ws
+let wss
 
 rtm.calls = []
 
@@ -24,9 +24,13 @@ rtm.reset = function () {
 rtm.send = function (message, msDelay) {
   return rtm._.connected
     .then(() => {
-      ws.send(JSON.stringify(message))
-      return delay(msDelay || 100)
+      wss.clients.forEach((client) => {
+        try {
+          client.send(JSON.stringify(message))
+        } finally {}
+      })
     })
+    .then(() => delay(msDelay || 100))
 }
 
 function delay (ms) {
@@ -36,28 +40,29 @@ function delay (ms) {
 }
 
 function setUpWebsocketServer (port, connectedCallback) {
-  const wss = new WebSocketServer({ port: port })
+  wss = new WebSocketServer({ port: port, clientTracking: true })
 
   logger.info(`starting RTM server on port ${port}`)
 
   wss.on('connection', (websock) => {
-    ws = websock
 
-    ws.on('message', (message) => {
-      logger.debug('message received')
-      logger.debug(message)
-
-      try {
-        rtm.calls.push(JSON.parse(message))
-      } catch (err) {
-        logger.error('could not parse incoming RTM message')
-        logger.error(err)
-
-        rtm.calls.push(message)
-      }
-    })
+    websock.on('message', recordMessage)
 
     logger.info(`RTM connected on port ${port}`)
     connectedCallback()
   })
+}
+
+function recordMessage(message) {
+  logger.debug('message received')
+  logger.debug(message)
+
+  try {
+    rtm.calls.push(JSON.parse(message))
+  } catch (err) {
+    logger.error('could not parse incoming RTM message')
+    logger.error(err)
+
+    rtm.calls.push(message)
+  }
 }

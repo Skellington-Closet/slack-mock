@@ -5,6 +5,7 @@ const web = require('./mocker/web')
 const incomingWebhooks = require('./mocker/incoming-webhooks')
 const outgoingWebhooks = require('./mocker/outgoing-webhooks')
 const slashCommands = require('./mocker/slash-commands')
+const events = require('./mocker/events')
 const logger = require('./lib/logger')
 let instance
 
@@ -17,22 +18,16 @@ module.exports = function (config) {
     logger.level = config.logLevel
   }
 
-  rtm._.init({rtmPort: config.rtmPort})
+  rtm._.init({rtmPort: config.rtmPort || 9001})
   web._.init()
 
   logger.info('slack-mock running')
 
   instance = {
-    web: {
-      reset: web.reset.bind(web),
-      addResponse: web.addResponse.bind(web),
-      calls: web.calls
-    },
-    rtm: {
-      send: rtm.send.bind(rtm),
-      reset: rtm.reset.bind(rtm),
-      calls: rtm.calls,
-      connected: rtm.connected
+    events: {
+      send: events.send.bind(events),
+      reset: events.reset.bind(events),
+      calls: events.calls
     },
     incomingWebhooks: {
       register: incomingWebhooks.register.bind(incomingWebhooks),
@@ -45,16 +40,29 @@ module.exports = function (config) {
       reset: outgoingWebhooks.reset.bind(outgoingWebhooks),
       calls: outgoingWebhooks.calls
     },
+    rtm: {
+      send: rtm.send.bind(rtm),
+      reset: rtm.reset.bind(rtm),
+      calls: rtm.calls,
+      connected: rtm.connected
+    },
     slashCommands: {
-      send: slashCommands.send.bind(outgoingWebhooks),
-      reset: slashCommands.reset.bind(outgoingWebhooks),
+      send: slashCommands.send.bind(slashCommands),
+      reset: slashCommands.reset.bind(slashCommands),
       calls: slashCommands.calls
     },
+    web: {
+      reset: web.reset.bind(web),
+      addResponse: web.addResponse.bind(web),
+      calls: web.calls
+    },
     reset: function () {
-      web.reset()
-      rtm.reset()
+      events.reset()
       incomingWebhooks.reset()
       outgoingWebhooks.reset()
+      rtm.reset()
+      slashCommands.reset()
+      web.reset()
     }
   }
 

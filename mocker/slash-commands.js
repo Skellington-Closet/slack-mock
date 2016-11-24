@@ -15,6 +15,7 @@ slashCommands.calls = []
 slashCommands.send = function (target, data) {
   data.response_url = `https://slack-mock/slash-command/${++commandNumber}`
 
+  // slash commands use content-type application/x-www-form-urlencoded
   request({
     uri: target,
     method: 'POST',

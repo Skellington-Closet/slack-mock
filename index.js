@@ -50,7 +50,8 @@ module.exports = function (config) {
     rtm: {
       send: rtm.send.bind(rtm),
       reset: rtm.reset.bind(rtm),
-      calls: rtm.calls
+      calls: rtm.calls,
+      clients: rtm.clients
     },
     slashCommands: {
       send: slashCommands.send.bind(slashCommands),

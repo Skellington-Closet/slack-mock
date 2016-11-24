@@ -5,18 +5,18 @@ const request = require('request')
 const logger = require('../lib/logger')
 
 outgoingWebhooks.calls = []
-outgoingWebhooks.send = function (fromPath, data) {
+outgoingWebhooks.send = function (target, data) {
   request({
     method: 'POST',
     json: true,
     body: data
   }, (err, res, body) => {
     if (err) {
-      return logger.error(`error receiving response to outgoing webhook ${fromPath}`, err)
+      return logger.error(`error receiving response to outgoing webhook ${target}`, err)
     }
 
     outgoingWebhooks.calls.push({
-      url: fromPath,
+      url: target,
       body: body,
       headers: res.headers,
       statusCode: res.status

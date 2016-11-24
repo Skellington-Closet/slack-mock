@@ -4,23 +4,24 @@ const incomingWebhooks = module.exports
 const nock = require('nock')
 const qs = require('qs')
 const logger = require('../lib/logger')
-const customResponses = {}
+let customResponses = {}
 
 incomingWebhooks.calls = []
 
 incomingWebhooks.reset = function () {
+  customResponses = {}
   incomingWebhooks.calls.splice(0, incomingWebhooks.calls.length)
 }
 
-incomingWebhooks.addResponse = function (cfg) {
-  if (!customResponses[cfg.url]) {
-    customResponses[cfg.url] = []
+incomingWebhooks.addResponse = function (opts) {
+  if (!customResponses[opts.url]) {
+    customResponses[opts.url] = []
   }
 
-  customResponses[cfg.url].push({
-    status: cfg.status || 200,
-    body: cfg.body || {ok: true},
-    headers: cfg.headers || {}
+  customResponses[opts.url].push({
+    status: opts.status || 200,
+    body: opts.body || {ok: true},
+    headers: opts.headers || {}
   })
 }
 
@@ -35,7 +36,7 @@ function reply (url, requestBody) {
   const headers = this.req.headers
 
   if (headers['content-type'] === 'application/x-www-form-urlencoded') {
-    requestBody = qs.parse(requestBody) // TODO will this automatically url decode the payload?
+    requestBody = qs.parse(requestBody)
   }
 
   incomingWebhooks.calls.push({

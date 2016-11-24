@@ -20,7 +20,7 @@ web._.init = function () {
     .reply(reply)
 
     .post(/.*/, () => true)
-    .reply(reply)
+    .reply(replyOAuth)
 
   // Slack accepts both GET and POST requests
   nock('https://slack.com/api')
@@ -30,7 +30,7 @@ web._.init = function () {
     .reply(reply) // TODO test GET requests
 
     .post(/.*/, () => true)
-    .reply(reply)
+    .reply(replyApi)
 }
 
 web.reset = function () {
@@ -43,6 +43,7 @@ web.addResponse = function (cfg) {
     customResponses[cfg.action] = []
   }
 
+  // TODO this should take a full url
   customResponses[cfg.action].push({
     status: cfg.status || 200,
     body: cfg.body || {ok: true},
@@ -50,8 +51,18 @@ web.addResponse = function (cfg) {
   })
 }
 
-function reply (uri, requestBody) {
+function replyOAuth(uri, requestBody) {
+  const action = 'https://slack.com/oauth/authorize'
+  return reply(action, requestBody)
+}
+
+function replyApi(uri, requestBody) {
   const action = uri.replace('/api/', '')
+  return reply(action, requestBody)
+}
+
+
+function reply (action, requestBody) {
   const response = getResponse(action)
 
   if (typeof requestBody === 'string') {

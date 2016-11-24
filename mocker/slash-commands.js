@@ -12,6 +12,7 @@ nock('https://slack-mock/slash-command')
   .reply(reply)
 
 slashCommands.calls = []
+
 slashCommands.send = function (target, data) {
   data.response_url = `https://slack-mock/slash-command/${++commandNumber}`
 

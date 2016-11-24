@@ -5,13 +5,15 @@ const web = require('./mocker/web')
 const incomingWebhooks = require('./mocker/incoming-webhooks')
 const outgoingWebhooks = require('./mocker/outgoing-webhooks')
 const slashCommands = require('./mocker/slash-commands')
+const interactiveButtons = require('./mocker/interactive-buttons')
 const events = require('./mocker/events')
 const logger = require('./lib/logger')
-let instance
+
+module.exports.instance;
 
 module.exports = function (config) {
-  if (instance) {
-    return instance
+  if (module.exports.instance) {
+    return module.exports.instance
   }
 
   if (config.logLevel) {
@@ -23,7 +25,7 @@ module.exports = function (config) {
 
   logger.info('slack-mock running')
 
-  instance = {
+  module.exports.instance = {
     events: {
       send: events.send.bind(events),
       reset: events.reset.bind(events),
@@ -35,6 +37,11 @@ module.exports = function (config) {
       reset: incomingWebhooks.reset.bind(incomingWebhooks),
       calls: incomingWebhooks.calls
     },
+    interactiveButtons: {
+      send: interactiveButtons.send.bind(interactiveButtons),
+      reset: interactiveButtons.reset.bind(interactiveButtons),
+      calls: interactiveButtons.calls
+    },
     outgoingWebhooks: {
       send: outgoingWebhooks.send.bind(outgoingWebhooks),
       reset: outgoingWebhooks.reset.bind(outgoingWebhooks),
@@ -43,8 +50,7 @@ module.exports = function (config) {
     rtm: {
       send: rtm.send.bind(rtm),
       reset: rtm.reset.bind(rtm),
-      calls: rtm.calls,
-      connected: rtm.connected
+      calls: rtm.calls
     },
     slashCommands: {
       send: slashCommands.send.bind(slashCommands),
@@ -59,6 +65,7 @@ module.exports = function (config) {
     reset: function () {
       events.reset()
       incomingWebhooks.reset()
+      interactiveButtons.reset()
       outgoingWebhooks.reset()
       rtm.reset()
       slashCommands.reset()
@@ -66,5 +73,5 @@ module.exports = function (config) {
     }
   }
 
-  return instance
+  return module.exports.instance
 }

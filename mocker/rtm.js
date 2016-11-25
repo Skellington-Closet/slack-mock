@@ -23,16 +23,16 @@ rtm.reset = function () {
 }
 
 rtm.broadcast = function (message, cb) {
-  cb = cb || function() {}
+  cb = cb || function () {}
 
   return Promise.all(rtm.clients.map((client) => {
-      return rtm.send(message, client)
-    }))
+    return rtm.send(message, client)
+  }))
     .then(cb)
 }
 
-rtm.send = function(message, client, cb) {
-  cb = cb || function() {}
+rtm.send = function (message, client, cb) {
+  cb = cb || function () {}
 
   return new Promise((resolve) => {
     try {
@@ -42,7 +42,7 @@ rtm.send = function(message, client, cb) {
         }
         resolve()
       })
-    } catch(e) {
+    } catch (e) {
       logger.info(`could not broadcast rtm message to all clients`, e)
       resolve()
     }

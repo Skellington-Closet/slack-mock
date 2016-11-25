@@ -9,7 +9,7 @@ const interactiveButtons = require('./mocker/interactive-buttons')
 const events = require('./mocker/events')
 const logger = require('./lib/logger')
 
-module.exports.instance;
+module.exports.instance
 
 module.exports = function (config) {
   if (module.exports.instance) {

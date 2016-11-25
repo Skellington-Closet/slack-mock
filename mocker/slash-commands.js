@@ -29,7 +29,7 @@ slashCommands.send = function (target, data) {
     if (typeof body === 'string') {
       try {
         body = JSON.parse(body)
-      } catch(e) {
+      } catch (e) {
         logger.error('could not parse slash command response as json', e)
       }
     }

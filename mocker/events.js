@@ -2,7 +2,6 @@
 
 const events = module.exports
 const request = require('request')
-const qs = require('qs')
 const logger = require('../lib/logger')
 let commandNumber = 0
 
@@ -20,14 +19,6 @@ events.send = function (target, data) {
   }, (err, res, body) => {
     if (err) {
       return logger.error(`error receiving response to events api ${target}`, err)
-    }
-
-    if (typeof body === 'string') {
-      try {
-        body = JSON.parse(body)
-      } catch(e) {
-        logger.error('could not parse events api response as json', e)
-      }
     }
 
     events.calls.push({

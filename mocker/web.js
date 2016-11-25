@@ -50,17 +50,16 @@ web.addResponse = function (cfg) {
   })
 }
 
-function replyOAuth(uri, requestBody) {
+function replyOAuth (uri, requestBody) {
   return reply('https://slack.com/oauth/authorize', requestBody)
 }
 
-function replyApi(uri, requestBody) {
+function replyApi (uri, requestBody) {
   return reply(`https://slack.com${uri}`, requestBody)
 }
 
-
 function reply (uri, requestBody) {
-  const response = getResponse(action)
+  const response = getResponse(uri)
 
   if (typeof requestBody === 'string') {
     requestBody = qs.parse(requestBody)

@@ -19,7 +19,7 @@ incomingWebhooks.addResponse = function (opts) {
   }
 
   customResponses[opts.url].push({
-    status: opts.status || 200,
+    statusCode: opts.statusCode || 200,
     body: opts.body || {ok: true},
     headers: opts.headers || {}
   })
@@ -57,7 +57,7 @@ function getResponse (url) {
   }
 
   return [
-    response.status,
+    response.statusCode,
     response.body,
     response.headers
   ]

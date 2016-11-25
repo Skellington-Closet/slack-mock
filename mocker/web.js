@@ -27,7 +27,7 @@ web._.init = function () {
     .persist()
     .get(/.*/)
     .query(true)
-    .reply(reply) // TODO test GET requests
+    .reply(reply)
 
     .post(/.*/, () => true)
     .reply(replyApi)
@@ -39,30 +39,27 @@ web.reset = function () {
 }
 
 web.addResponse = function (cfg) {
-  if (!customResponses[cfg.action]) {
-    customResponses[cfg.action] = []
+  if (!customResponses[cfg.url]) {
+    customResponses[cfg.url] = []
   }
 
-  // TODO this should take a full url
-  customResponses[cfg.action].push({
-    status: cfg.status || 200,
+  customResponses[cfg.url].push({
+    statusCode: cfg.statusCode || 200,
     body: cfg.body || {ok: true},
     headers: cfg.headers || {}
   })
 }
 
 function replyOAuth(uri, requestBody) {
-  const action = 'https://slack.com/oauth/authorize'
-  return reply(action, requestBody)
+  return reply('https://slack.com/oauth/authorize', requestBody)
 }
 
 function replyApi(uri, requestBody) {
-  const action = uri.replace('/api/', '')
-  return reply(action, requestBody)
+  return reply(`https://slack.com${uri}`, requestBody)
 }
 
 
-function reply (action, requestBody) {
+function reply (uri, requestBody) {
   const response = getResponse(action)
 
   if (typeof requestBody === 'string') {
@@ -70,20 +67,20 @@ function reply (action, requestBody) {
   }
 
   web.calls.push({
-    action: action,
+    url: uri,
     body: requestBody,
     headers: this.req.headers
   })
 
   return [
-    response.status,
+    response.statusCode,
     response.body,
     response.headers
   ]
 }
 
 function getResponse (action) {
-  let response = {status: 200, body: {ok: true}}
+  let response = {statusCode: 200, body: {ok: true}}
 
   if (customResponses[action] && customResponses[action].length) {
     response = customResponses[action].shift()

@@ -4,7 +4,8 @@
   "description": "Slack API mocker",
   "main": "index.js",
   "scripts": {
-    "test": "standard index.js mocker/*.js lib/*.js --fix"
+    "pretest": "standard index.js mocker/*.js lib/*.js --fix",
+    "test": "istanbul cover --report lcov --dir ./coverage/ _mocha --recursive ./test/ --grep ./test/**/*.spec.js -- --colors --reporter spec"
   },
   "author": "",
   "license": "MIT",
@@ -16,6 +17,12 @@
     "ws": "^1.1.1"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "proxyquire": "^1.7.10",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
     "standard": "^8.5.0"
   }
 }

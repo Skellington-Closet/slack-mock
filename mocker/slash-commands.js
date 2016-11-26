@@ -42,6 +42,8 @@ slashCommands.send = function (target, data) {
       type: 'response'
     })
   })
+
+  return Promise.resolve()
 }
 
 slashCommands.reset = function () {

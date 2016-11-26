@@ -23,6 +23,8 @@ outgoingWebhooks.send = function (targetUrl, outgoingBody) {
       statusCode: res.status
     })
   })
+
+  return Promise.resolve()
 }
 
 outgoingWebhooks.reset = function () {

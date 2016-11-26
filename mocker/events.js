@@ -28,6 +28,8 @@ events.send = function (target, data) {
       statusCode: res.statusCode
     })
   })
+
+  return Promise.resolve()
 }
 
 events.reset = function () {

@@ -25,7 +25,7 @@ The configured instance of the Slack Mock `slackMock.instance` object. This is t
 The `events` object mocks sending payloads from the Slack Events API to your Slack App.
 
 - `send`: `function(targetUrl, body)` Sends a payload from the Events API to your Slack App target URL.
-The body will include a `response_url` parameter
+The body will include a `response_url` parameter. Returns an immediately resolved Promise for easy chaining.
 
 - `reset`: `function()` Empties the `events.calls` array.
 
@@ -66,7 +66,7 @@ will be used in a FIFO order. Options are:
 The `interactiveButtons` object mocks sending payloads from Slack interactive buttons to your Slack App.
 
 - `send`: `function(targetUrl, body)` Sends a payload from a Slack interactive button to your Slack App target URL.
-The body will include a `response_url` parameter
+The body will include a `response_url` parameter. Returns an immediately resolved Promise for easy chaining.
 
 - `reset`: `function()` Empties the `interactiveButtons.calls` array.
 
@@ -84,7 +84,7 @@ This includes both responses to the original Slack interactive button request an
 The `outgoingingWebhooks` object mocks sending payloads from Slack Outgoing Webhooks to your Slack App.
 
 - `send`: `function(targetUrl, body)` Sends a payload from an Outgoing Webhook to your Slack App target URL.
-The body will include a `response_url` parameter
+The body will include a `response_url` parameter Returns an immediately resolved Promise for easy chaining.
 
 - `reset`: `function()` Empties the `outgoingingWebhooks.calls` array.
 
@@ -103,9 +103,10 @@ The `rtm` object mocks sending and receiving payloads from the Slack RTM API.
 - `clients`: `Array` An array of websocket clients connected to the mock RTM server. Ordered by connection time.
 
 - `broadcast`: `function(message)` Broadcasts a message from Slack to all connected clients (bots). Good for single team 
-bots or simulating bots that are connected to the same team.
+bots or simulating bots that are connected to the same team. Returns an immediately resolved Promise for easy chaining.
 
 - `send`: `function(message, client)` Sends a message from Slack to a connected client (bot).
+Returns an immediately resolved Promise for easy chaining.
 
 - `reset`: `function()` Clears the `rtm.calls` array and closes connections to all connected clients.
 
@@ -119,7 +120,7 @@ These are the exact message received with the following additions
 The `slashCommands` object mocks sending payloads from a Slack Slash Command to your Slack App.
 
 - `send`: `function(targetUrl, body)` Sends a payload from a Slash Command to your Slack App target URL.
-The body will include a `response_url` parameter
+The body will include a `response_url` parameter Returns an immediately resolved Promise for easy chaining.
 
 - `reset`: `function()` Empties the `slashCommands.calls` array.
 

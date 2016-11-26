@@ -42,6 +42,8 @@ interactiveButtons.send = function (target, data) {
       type: 'response'
     })
   })
+
+  return Promise.resolve()
 }
 
 interactiveButtons.reset = function () {

@@ -22,18 +22,13 @@ rtm.reset = function () {
   rtm.clients.splice(0, rtm.clients.length)
 }
 
-rtm.broadcast = function (message, cb) {
-  cb = cb || function () {}
-
+rtm.broadcast = function (message) {
   return Promise.all(rtm.clients.map((client) => {
     return rtm.send(message, client)
   }))
-    .then(cb)
 }
 
-rtm.send = function (message, client, cb) {
-  cb = cb || function () {}
-
+rtm.send = function (message, client) {
   return new Promise((resolve) => {
     try {
       client.send(JSON.stringify(message), (e) => {
@@ -48,7 +43,6 @@ rtm.send = function (message, client, cb) {
     }
   })
   .then(delay(10))
-  .then(cb)
 }
 
 function delay (ms) {

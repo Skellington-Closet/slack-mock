@@ -20,7 +20,7 @@ outgoingWebhooks.send = function (targetUrl, outgoingBody) {
       url: targetUrl,
       body: body,
       headers: res.headers,
-      statusCode: res.status
+      statusCode: res.statusCode
     })
   })
 

@@ -6,8 +6,9 @@ const nock = require('nock')
 const qs = require('qs')
 const logger = require('../lib/logger')
 let commandNumber = 0
+const responseUrlBase = 'https://interactive-buttons.slack-mock'
 
-nock('https://slack-mock/interactive-buttons')
+nock(responseUrlBase)
   .persist()
   .post(/.*/, () => true)
   .reply(reply)
@@ -15,7 +16,7 @@ nock('https://slack-mock/interactive-buttons')
 interactiveButtons.calls = []
 
 interactiveButtons.send = function (target, data) {
-  data.response_url = `https://slack-mock/interactive-buttons/${++commandNumber}`
+  data.response_url = `${responseUrlBase}/${++commandNumber}`
 
   // interactive-buttons use content-type application/x-www-form-urlencoded
   request({
@@ -51,13 +52,13 @@ interactiveButtons.reset = function () {
   interactiveButtons.calls.splice(0, interactiveButtons.calls.length)
 }
 
-function reply (uri, requestBody) {
+function reply (path, requestBody) {
   if (typeof requestBody === 'string') {
     requestBody = qs.parse(requestBody)
   }
 
   interactiveButtons.calls.push({
-    url: `https://slack-mock${uri}`,
+    url: `${responseUrlBase}${path}`,
     body: requestBody,
     headers: this.req.headers,
     type: 'response_url'

@@ -4,21 +4,21 @@ const incomingWebhooks = module.exports
 const nock = require('nock')
 const qs = require('qs')
 const logger = require('../lib/logger')
-let customResponses = {}
+let customResponses = new Map()
 
 incomingWebhooks.calls = []
 
 incomingWebhooks.reset = function () {
-  customResponses = {}
+  customResponses.clear()
   incomingWebhooks.calls.splice(0, incomingWebhooks.calls.length)
 }
 
 incomingWebhooks.addResponse = function (opts) {
-  if (!customResponses[opts.url]) {
-    customResponses[opts.url] = []
+  if (!customResponses.get(opts.url)) {
+    customResponses.set(opts.url, [])
   }
 
-  customResponses[opts.url].push({
+  customResponses.get(opts.url).push({
     statusCode: opts.statusCode || 200,
     body: opts.body || {ok: true},
     headers: opts.headers || {}
@@ -29,30 +29,35 @@ incomingWebhooks.register = function (url) {
   nock(url)
     .persist()
     .post(/.*/, () => true)
-    .reply(reply)
+    .reply(reply(url))
 }
 
-function reply (url, requestBody) {
-  const headers = this.req.headers
+function reply (url) {
+  return record
 
-  if (headers['content-type'] === 'application/x-www-form-urlencoded') {
-    requestBody = qs.parse(requestBody)
+  function record (path, requestBody) {
+    const headers = this.req.headers
+
+    if (headers['content-type'] === 'application/x-www-form-urlencoded') {
+      requestBody = qs.parse(requestBody)
+    }
+
+    incomingWebhooks.calls.push({
+      url: url,
+      body: requestBody,
+      headers: headers
+    })
+
+    return getResponse(url)
   }
-
-  incomingWebhooks.calls.push({
-    url: url,
-    body: requestBody,
-    headers: headers
-  })
-
-  return getResponse(url)
 }
 
 function getResponse (url) {
-  let response = {status: 200, body: {ok: true}, headers: {}}
+  let response = {statusCode: 200, body: {ok: true}, headers: {}}
+  const urlResponses = customResponses.get(url)
 
-  if (customResponses[url] && customResponses[url].length) {
-    response = customResponses[url].shift()
+  if (urlResponses && urlResponses.length) {
+    response = urlResponses.shift()
     logger.debug('responding to incoming webhook with override', response)
   }
 

@@ -42,6 +42,7 @@ This includes both responses to the original Events API request and requests to 
 The `incomingWebhooks` object mocks sending payloads from you Slack App to Incoming Webhooks.
 
 - `register`: `function(url)` Registers a Slack Incoming Webhook endpoint your Slack app will POST to.
+Incoming webhook urls should be registered **before** they are used.
 
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
 receiving a post to a registered endpoint. This method can be called multiple times per webhook. Responses
@@ -72,7 +73,8 @@ The body will include a `response_url` parameter. Returns an immediately resolve
 
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Slack interactive button POST.
 This includes both responses to the original Slack interactive button request and requests to the `response_url`.
-  - `url` The url of the call that was intercepted
+  - `url` The url of the call that was intercepted. For type `response`, this will be the endpoint in your Slack app used in the call to 
+  `interactiveButtons.send`, for type `response_url` this will be the `response_url` from the payload sent to your Slack app.
   - `body` The body of the intercepted request as an Object
   - `headers` The headers of the intercepted request as an Object
   - `statusCode` The status code of the intercepted request. Only captured for immediate responses, not for using the `response_url`.

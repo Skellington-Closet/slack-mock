@@ -7,7 +7,8 @@ const qs = require('qs')
 const logger = require('../lib/logger')
 let commandNumber = 0
 
-nock('https://slack-mock/message-action')
+nock('https://slack-mock/interactive-buttons')
+  .persist()
   .post(/.*/, () => true)
   .reply(reply)
 
@@ -56,7 +57,7 @@ function reply (uri, requestBody) {
   }
 
   interactiveButtons.calls.push({
-    url: `https://slack-mock/interactive-buttons${uri}`,
+    url: `https://slack-mock${uri}`,
     body: requestBody,
     headers: this.req.headers,
     type: 'response_url'

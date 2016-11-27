@@ -8,6 +8,7 @@ const logger = require('../lib/logger')
 let commandNumber = 0
 
 nock('https://slack-mock/slash-command')
+  .persist()
   .post(/.*/, () => true)
   .reply(reply)
 

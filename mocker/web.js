@@ -51,14 +51,14 @@ web.addResponse = function (cfg) {
 }
 
 function replyOAuth (uri, requestBody) {
-  return reply('https://slack.com/oauth/authorize', requestBody)
+  return reply('https://slack.com/oauth/authorize', requestBody, this.req)
 }
 
 function replyApi (uri, requestBody) {
-  return reply(`https://slack.com${uri}`, requestBody)
+  return reply(`https://slack.com${uri}`, requestBody, this.req)
 }
 
-function reply (uri, requestBody) {
+function reply (uri, requestBody, req) {
   const response = getResponse(uri)
 
   if (typeof requestBody === 'string') {
@@ -68,7 +68,7 @@ function reply (uri, requestBody) {
   web.calls.push({
     url: uri,
     body: requestBody,
-    headers: this.req.headers
+    headers: req.headers
   })
 
   return [

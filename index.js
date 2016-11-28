@@ -21,7 +21,6 @@ module.exports = function (config) {
   }
 
   rtm._.init({rtmPort: config.rtmPort || 9001})
-  web._.init()
 
   logger.info('slack-mock running')
 

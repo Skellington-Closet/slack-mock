@@ -3,26 +3,17 @@
 const incomingWebhooks = module.exports
 const nock = require('nock')
 const qs = require('qs')
-const logger = require('../lib/logger')
-let customResponses = new Map()
+const customResponses = require('../lib/custom-responses')
 
 incomingWebhooks.calls = []
 
 incomingWebhooks.reset = function () {
-  customResponses.clear()
+  customResponses.reset('incoming-webhooks')
   incomingWebhooks.calls.splice(0, incomingWebhooks.calls.length)
 }
 
 incomingWebhooks.addResponse = function (opts) {
-  if (!customResponses.get(opts.url)) {
-    customResponses.set(opts.url, [])
-  }
-
-  customResponses.get(opts.url).push({
-    statusCode: opts.statusCode || 200,
-    body: opts.body || {ok: true},
-    headers: opts.headers || {}
-  })
+  customResponses.set('incoming-webhooks', opts)
 }
 
 incomingWebhooks.register = function (url) {
@@ -48,22 +39,6 @@ function reply (url) {
       headers: headers
     })
 
-    return getResponse(url)
+    return customResponses.get('incoming-webhooks', url)
   }
-}
-
-function getResponse (url) {
-  let response = {statusCode: 200, body: {ok: true}, headers: {}}
-  const urlResponses = customResponses.get(url)
-
-  if (urlResponses && urlResponses.length) {
-    response = urlResponses.shift()
-    logger.debug('responding to incoming webhook with override', response)
-  }
-
-  return [
-    response.statusCode,
-    response.body,
-    response.headers
-  ]
 }

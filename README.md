@@ -139,7 +139,8 @@ This includes both responses to the original Slash Command request and requests 
 
 The `web` object receives requests to the Slack Web API and responds with mocked responses.
 
-This mock can be used both for the Web API and the OAuth endpoint (`https://slack.com/oauth/authorize`). It supports both GET and POST requests to all endpoints.
+This mock can be used both for the Web API and the OAuth endpoint (`https://slack.com/oauth/authorize`). 
+It supports both GET and POST requests to all endpoints.
 
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
 receiving a request to a Web API endpoint. Endpoints without a custom response will return 200 OK.

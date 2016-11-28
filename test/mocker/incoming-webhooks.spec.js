@@ -11,6 +11,7 @@ chai.use(require('sinon-chai'))
 describe('mocker: incoming webhooks', function () {
   let loggerMock
   let incomingWebhooks
+  let customResponsesMock
 
   before(function () {
     loggerMock = {
@@ -19,10 +20,17 @@ describe('mocker: incoming webhooks', function () {
       debug: sinon.stub()
     }
 
+    customResponsesMock = {
+      get: sinon.stub(),
+      reset: sinon.stub(),
+      set: sinon.stub()
+    }
+
     // I ran into some weird scoping issues by redefining this in a beforeEach
     // moving to a before() fixed them
     incomingWebhooks = proxyquire('../../mocker/incoming-webhooks', {
-      '../lib/logger': loggerMock
+      '../lib/logger': loggerMock,
+      '../lib/custom-responses': customResponsesMock
     })
   })
 
@@ -30,6 +38,11 @@ describe('mocker: incoming webhooks', function () {
     loggerMock.error.reset()
     loggerMock.info.reset()
     loggerMock.debug.reset()
+
+    customResponsesMock.get.reset()
+    customResponsesMock.set.reset()
+    customResponsesMock.reset.reset()
+    customResponsesMock.get.returns(200, 'OK', {})
 
     incomingWebhooks.reset()
   })
@@ -50,7 +63,7 @@ describe('mocker: incoming webhooks', function () {
       url = 'http://register.not.real'
     })
 
-    it('should register a url with default response', function (done) {
+    it('should register a url', function (done) {
       sendToUrl(url, {}, beforeRegister)
 
       function beforeRegister (err) {
@@ -63,9 +76,7 @@ describe('mocker: incoming webhooks', function () {
       function afterRegister (err, res, body) {
         expect(err).not.to.exist
 
-        // default response
-        expect(res.statusCode).to.equal(200)
-        expect(body.ok).to.be.true
+        expect(customResponsesMock.get).to.have.been.calledWith('incoming-webhooks', url)
         done()
       }
     })
@@ -79,153 +90,17 @@ describe('mocker: incoming webhooks', function () {
       incomingWebhooks.register(url)
     })
 
-    it('should add a custom response', function (done) {
-      incomingWebhooks.addResponse({
+    it('should add a custom response', function () {
+      const opts = {
         url: url,
         statusCode: 500,
         body: {not: 'ok'},
         headers: {walter: 'white'}
-      })
-
-      sendToUrl(url, {}, (err, res, body) => {
-        if (err) return done(err)
-
-        expect(res.statusCode).to.equal(500)
-        expect(body).to.deep.equal({not: 'ok'})
-        expect(res.headers.walter).to.equal('white')
-        done()
-      })
-    })
-
-    it('should set default status', function (done) {
-      incomingWebhooks.addResponse({
-        url: url,
-        body: {maybe: 'ok'},
-        headers: {walter: 'white'}
-      })
-
-      sendToUrl(url, {}, (err, res, body) => {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(200)
-        expect(body).to.deep.equal({maybe: 'ok'})
-        done()
-      })
-    })
-
-    it('should set default body', function (done) {
-      incomingWebhooks.addResponse({
-        url: url,
-        statusCode: 500,
-        headers: {walter: 'white'}
-      })
-
-      sendToUrl(url, {}, (err, res, body) => {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(500)
-        expect(body).to.deep.equal({ok: true})
-        done()
-      })
-    })
-
-    it('should set default headers', function (done) {
-      incomingWebhooks.addResponse({
-        url: url,
-        statusCode: 500,
-        body: {maybe: 'ok'}
-      })
-
-      sendToUrl(url, {}, (err, res, body) => {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(500)
-        expect(body).to.deep.equal({maybe: 'ok'})
-        expect(res.headers).to.be.defined
-
-        done()
-      })
-    })
-
-    it('should queue requests', function (done) {
-      incomingWebhooks.addResponse({
-        url: url,
-        statusCode: 201
-      })
-
-      incomingWebhooks.addResponse({
-        url: url,
-        statusCode: 202
-      })
-
-      sendToUrl(url, {}, (err, res) => {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(201)
-
-        sendToUrl(url, {}, queuedCall)
-      })
-
-      function queuedCall (err, res) {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(202)
-
-        sendToUrl(url, {}, defaultCall)
       }
 
-      function defaultCall (err, res) {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(200)
-        done()
-      }
-    })
+      incomingWebhooks.addResponse(opts)
 
-    it('should add a request after a reset', function (done) {
-      incomingWebhooks.addResponse({
-        url: url,
-        statusCode: 201
-      })
-
-      incomingWebhooks.reset()
-
-      incomingWebhooks.addResponse({
-        url: url,
-        statusCode: 202
-      })
-
-      sendToUrl(url, {}, (err, res) => {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(202)
-        done()
-      })
-    })
-
-    it('should add a request after flushing request queue', function (done) {
-      incomingWebhooks.addResponse({
-        url: url,
-        statusCode: 201
-      })
-
-      sendToUrl(url, {}, (err, res) => {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(201)
-
-        sendToUrl(url, {}, emptyQueue)
-      })
-
-      function emptyQueue (err, res) {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(200)
-
-        incomingWebhooks.addResponse({
-          url: url,
-          statusCode: 202
-        })
-
-        sendToUrl(url, {}, queuedResponse)
-      }
-
-      function queuedResponse (err, res) {
-        if (err) return done(err)
-        expect(res.statusCode).to.equal(202)
-        done()
-      }
+      expect(customResponsesMock.set).to.have.been.calledWith('incoming-webhooks', opts)
     })
   })
 
@@ -292,22 +167,9 @@ describe('mocker: incoming webhooks', function () {
       })
     })
 
-    it('should reset queued responses', function (done) {
-      incomingWebhooks.addResponse({
-        url: url,
-        statusCode: 500,
-        body: {not: 'ok'}
-      })
-
+    it('should reset queued responses', function () {
       incomingWebhooks.reset()
-      sendToUrl(url, {}, (err, res, body) => {
-        if (err) return done(err)
-
-        expect(res.statusCode).to.equal(200)
-        expect(body).to.deep.equal({ok: true})
-
-        done()
-      })
+      expect(customResponsesMock.reset).to.have.been.calledWith('incoming-webhooks')
     })
   })
 })

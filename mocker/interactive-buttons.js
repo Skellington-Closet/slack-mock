@@ -62,7 +62,7 @@ function reply (path, requestBody) {
 
   interactiveButtons.calls.push({
     url: url,
-    body: utils.parseBody(path, requestBody),
+    body: utils.parseParams(path, requestBody),
     headers: this.req.headers,
     type: 'response_url'
   })

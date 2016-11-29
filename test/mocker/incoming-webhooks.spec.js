@@ -28,7 +28,7 @@ describe('mocker: incoming webhooks', function () {
     }
 
     utilsMock = {
-      parseBody: sinon.stub()
+      parseParams: sinon.stub()
     }
 
     // I ran into some weird scoping issues by redefining this in a beforeEach
@@ -45,8 +45,8 @@ describe('mocker: incoming webhooks', function () {
     loggerMock.info.reset()
     loggerMock.debug.reset()
 
-    utilsMock.parseBody.reset()
-    utilsMock.parseBody.returns({parsed: 'body'})
+    utilsMock.parseParams.reset()
+    utilsMock.parseParams.returns({parsed: 'body'})
 
     customResponsesMock.get.reset()
     customResponsesMock.set.reset()
@@ -127,7 +127,7 @@ describe('mocker: incoming webhooks', function () {
       }
 
       sendToUrl(url, body, () => {
-        expect(utilsMock.parseBody).to.have.been.calledWith('/', {walter: 'white'})
+        expect(utilsMock.parseParams).to.have.been.calledWith('/', {walter: 'white'})
         expect(incomingWebhooks.calls).to.have.length(1)
 
         const firstCall = incomingWebhooks.calls[0]
@@ -150,7 +150,7 @@ describe('mocker: incoming webhooks', function () {
         uri: url,
         form: formBody
       }, () => {
-        expect(utilsMock.parseBody).to.have.been.calledWith('/', 'walter=white')
+        expect(utilsMock.parseParams).to.have.been.calledWith('/', 'walter=white')
         expect(incomingWebhooks.calls).to.have.length(1)
         const firstCall = incomingWebhooks.calls[0]
         expect(firstCall.body).to.deep.equal({parsed: 'body'})

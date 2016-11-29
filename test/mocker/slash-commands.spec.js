@@ -34,7 +34,7 @@ describe('mocker: slash commands', function () {
     }
 
     utilsMock = {
-      parseBody: sinon.stub()
+      parseParams: sinon.stub()
     }
 
     requestMock = sinon.stub()
@@ -61,8 +61,8 @@ describe('mocker: slash commands', function () {
     requestMock.reset()
     requestMock.yields(null, resMock, bodyMock)
 
-    utilsMock.parseBody.reset()
-    utilsMock.parseBody.returns({parsed: 'body'})
+    utilsMock.parseParams.reset()
+    utilsMock.parseParams.returns({parsed: 'body'})
 
     customResponsesMock.get.reset()
     customResponsesMock.set.reset()
@@ -125,7 +125,7 @@ describe('mocker: slash commands', function () {
 
         // one call for the immediate response, one for the delayed response_url request
         expect(slashCommands.calls).to.have.length(2)
-        expect(utilsMock.parseBody).to.have.been.calledWithMatch(/\/\d/, {jesse: 'pinkman'})
+        expect(utilsMock.parseParams).to.have.been.calledWithMatch(/\/\d/, {jesse: 'pinkman'})
         expect(customResponsesMock.get).to.have.been.calledWith('slash-commands')
 
         const secondCall = slashCommands.calls[1]
@@ -159,7 +159,7 @@ describe('mocker: slash commands', function () {
 
         // one call for the immediate response, one for the delayed response_url request
         expect(slashCommands.calls).to.have.length(2)
-        expect(utilsMock.parseBody).to.have.been.calledWithMatch(/\/\d/, 'jesse=pinkman')
+        expect(utilsMock.parseParams).to.have.been.calledWithMatch(/\/\d/, 'jesse=pinkman')
         expect(customResponsesMock.get).to.have.been.calledWith('slash-commands')
 
         const secondCall = slashCommands.calls[1]

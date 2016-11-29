@@ -23,7 +23,7 @@ describe('mocker: web', function () {
     }
 
     utilsMock = {
-      parseBody: sinon.stub()
+      parseParams: sinon.stub()
     }
 
     rtmMock = {
@@ -51,8 +51,8 @@ describe('mocker: web', function () {
     loggerMock.info.reset()
     loggerMock.debug.reset()
 
-    utilsMock.parseBody.reset()
-    utilsMock.parseBody.returns({parsed: 'body'})
+    utilsMock.parseParams.reset()
+    utilsMock.parseParams.returns({parsed: 'body'})
 
     customResponsesMock.get.reset()
     customResponsesMock.reset.reset()
@@ -110,7 +110,7 @@ describe('mocker: web', function () {
         if (err) return done(err)
 
         expect(res.statusCode).to.equal(200)
-        expect(utilsMock.parseBody).to.have.been.calledWith('/api/users.list?token=abc', {team: 'not.real'})
+        expect(utilsMock.parseParams).to.have.been.calledWith('/api/users.list?token=abc', {team: 'not.real'})
 
         expect(web.calls).to.have.length(1)
 
@@ -137,7 +137,7 @@ describe('mocker: web', function () {
 
       function afterPost () {
         expect(web.calls).to.have.length(1)
-        expect(utilsMock.parseBody).to.have.been.calledWith('/api/users.list?token=abc', 'team=not.real')
+        expect(utilsMock.parseParams).to.have.been.calledWith('/api/users.list?token=abc', 'team=not.real')
 
         const firstCall = web.calls[0]
         expect(firstCall).to.have.keys(['url', 'body', 'headers'])
@@ -162,7 +162,7 @@ describe('mocker: web', function () {
         if (err) return done(err)
 
         expect(web.calls).to.have.length(1)
-        expect(utilsMock.parseBody).to.have.been.calledWith('/api/users.list?team=not.real', '')
+        expect(utilsMock.parseParams).to.have.been.calledWith('/api/users.list?team=not.real', '')
 
         const firstCall = web.calls[0]
         expect(firstCall).to.have.keys(['url', 'body', 'headers'])
@@ -184,7 +184,7 @@ describe('mocker: web', function () {
       }, afterPost)
 
       function afterPost () {
-        expect(utilsMock.parseBody).to.have.been.calledWith('/oauth/authorize', {team: 'not.real'})
+        expect(utilsMock.parseParams).to.have.been.calledWith('/oauth/authorize', {team: 'not.real'})
 
         expect(web.calls).to.have.length(1)
 
@@ -207,7 +207,7 @@ describe('mocker: web', function () {
       }, afterPost)
 
       function afterPost () {
-        expect(utilsMock.parseBody).to.have.been.calledWith('/oauth/authorize?team=not.real')
+        expect(utilsMock.parseParams).to.have.been.calledWith('/oauth/authorize?team=not.real')
 
         expect(web.calls).to.have.length(1)
 

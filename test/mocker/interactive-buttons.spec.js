@@ -34,7 +34,7 @@ describe('mocker: interactive buttons', function () {
     }
 
     utilsMock = {
-      parseBody: sinon.stub()
+      parseParams: sinon.stub()
     }
 
     requestMock = sinon.stub()
@@ -61,8 +61,8 @@ describe('mocker: interactive buttons', function () {
     requestMock.reset()
     requestMock.yields(null, resMock, bodyMock)
 
-    utilsMock.parseBody.reset()
-    utilsMock.parseBody.returns({parsed: 'body'})
+    utilsMock.parseParams.reset()
+    utilsMock.parseParams.returns({parsed: 'body'})
 
     customResponsesMock.get.reset()
     customResponsesMock.set.reset()
@@ -126,7 +126,7 @@ describe('mocker: interactive buttons', function () {
         try {
           // one call for the immediate response, one for the delayed response_url request
           expect(interactiveButtons.calls).to.have.length(2)
-          expect(utilsMock.parseBody).to.have.been.calledWithMatch(/\/\d/, {jesse: 'pinkman'})
+          expect(utilsMock.parseParams).to.have.been.calledWithMatch(/\/\d/, {jesse: 'pinkman'})
           expect(customResponsesMock.get).to.have.been.calledWith('interactive-buttons')
 
           const secondCall = interactiveButtons.calls[1]
@@ -164,7 +164,7 @@ describe('mocker: interactive buttons', function () {
         try {
           // one call for the immediate response, one for the delayed response_url request
           expect(interactiveButtons.calls).to.have.length(2)
-          expect(utilsMock.parseBody).to.have.been.calledWithMatch(/\/\d/, 'jesse=pinkman')
+          expect(utilsMock.parseParams).to.have.been.calledWithMatch(/\/\d/, 'jesse=pinkman')
           expect(customResponsesMock.get).to.have.been.calledWith('interactive-buttons')
 
           const secondCall = interactiveButtons.calls[1]

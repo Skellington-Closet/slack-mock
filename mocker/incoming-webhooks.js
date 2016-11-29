@@ -30,7 +30,7 @@ function reply (url) {
   function record (path, requestBody) {
     incomingWebhooks.calls.push({
       url: url,
-      body: utils.parseBody(path, requestBody),
+      body: utils.parseParams(path, requestBody),
       headers: this.req.headers
     })
 

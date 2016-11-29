@@ -130,10 +130,10 @@ describe('mocker: slash commands', function () {
 
         const secondCall = slashCommands.calls[1]
 
-        expect(secondCall).to.have.keys(['url', 'body', 'headers', 'type'])
+        expect(secondCall).to.have.keys(['url', 'params', 'headers', 'type'])
 
         expect(secondCall.url).to.equal(requestData.response_url)
-        expect(secondCall.body).to.deep.equal({parsed: 'body'})
+        expect(secondCall.params).to.deep.equal({parsed: 'body'})
         expect(secondCall.type).to.equal('response_url')
 
         done()
@@ -163,7 +163,7 @@ describe('mocker: slash commands', function () {
         expect(customResponsesMock.get).to.have.been.calledWith('slash-commands')
 
         const secondCall = slashCommands.calls[1]
-        expect(secondCall.body).to.deep.equal({parsed: 'body'})
+        expect(secondCall.params).to.deep.equal({parsed: 'body'})
         done()
       }
     })

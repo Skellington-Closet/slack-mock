@@ -115,9 +115,9 @@ describe('mocker: web', function () {
         expect(web.calls).to.have.length(1)
 
         const firstCall = web.calls[0]
-        expect(firstCall).to.have.keys(['url', 'body', 'headers'])
+        expect(firstCall).to.have.keys(['url', 'params', 'headers'])
         expect(firstCall.url).to.equal('https://slack.com/api/users.list')
-        expect(firstCall.body).to.deep.equal({parsed: 'body'})
+        expect(firstCall.params).to.deep.equal({parsed: 'body'})
 
         done()
       }
@@ -140,9 +140,9 @@ describe('mocker: web', function () {
         expect(utilsMock.parseParams).to.have.been.calledWith('/api/users.list?token=abc', 'team=not.real')
 
         const firstCall = web.calls[0]
-        expect(firstCall).to.have.keys(['url', 'body', 'headers'])
+        expect(firstCall).to.have.keys(['url', 'params', 'headers'])
         expect(firstCall.url).to.equal('https://slack.com/api/users.list')
-        expect(firstCall.body).to.deep.equal({parsed: 'body'})
+        expect(firstCall.params).to.deep.equal({parsed: 'body'})
 
         done()
       }
@@ -165,9 +165,9 @@ describe('mocker: web', function () {
         expect(utilsMock.parseParams).to.have.been.calledWith('/api/users.list?team=not.real', '')
 
         const firstCall = web.calls[0]
-        expect(firstCall).to.have.keys(['url', 'body', 'headers'])
+        expect(firstCall).to.have.keys(['url', 'params', 'headers'])
         expect(firstCall.url).to.equal('https://slack.com/api/users.list')
-        expect(firstCall.body).to.deep.equal({parsed: 'body'})
+        expect(firstCall.params).to.deep.equal({parsed: 'body'})
 
         done()
       }
@@ -189,9 +189,9 @@ describe('mocker: web', function () {
         expect(web.calls).to.have.length(1)
 
         const firstCall = web.calls[0]
-        expect(firstCall).to.have.keys(['url', 'body', 'headers'])
+        expect(firstCall).to.have.keys(['url', 'params', 'headers'])
         expect(firstCall.url).to.equal('https://slack.com/oauth/authorize')
-        expect(firstCall.body).to.deep.equal({parsed: 'body'})
+        expect(firstCall.params).to.deep.equal({parsed: 'body'})
 
         done()
       }
@@ -212,9 +212,9 @@ describe('mocker: web', function () {
         expect(web.calls).to.have.length(1)
 
         const firstCall = web.calls[0]
-        expect(firstCall).to.have.keys(['url', 'body', 'headers'])
+        expect(firstCall).to.have.keys(['url', 'params', 'headers'])
         expect(firstCall.url).to.equal('https://slack.com/oauth/authorize')
-        expect(firstCall.body).to.deep.equal({parsed: 'body'})
+        expect(firstCall.params).to.deep.equal({parsed: 'body'})
 
         done()
       }

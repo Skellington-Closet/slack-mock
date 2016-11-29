@@ -131,9 +131,9 @@ describe('mocker: incoming webhooks', function () {
         expect(incomingWebhooks.calls).to.have.length(1)
 
         const firstCall = incomingWebhooks.calls[0]
-        expect(firstCall).to.have.keys(['url', 'body', 'headers'])
+        expect(firstCall).to.have.keys(['url', 'params', 'headers'])
         expect(firstCall.url).to.equal(url)
-        expect(firstCall.body).to.deep.equal({parsed: 'body'})
+        expect(firstCall.params).to.deep.equal({parsed: 'body'})
         expect(firstCall.headers).to.exist
 
         done()
@@ -153,7 +153,7 @@ describe('mocker: incoming webhooks', function () {
         expect(utilsMock.parseParams).to.have.been.calledWith('/', 'walter=white')
         expect(incomingWebhooks.calls).to.have.length(1)
         const firstCall = incomingWebhooks.calls[0]
-        expect(firstCall.body).to.deep.equal({parsed: 'body'})
+        expect(firstCall.params).to.deep.equal({parsed: 'body'})
 
         done()
       })

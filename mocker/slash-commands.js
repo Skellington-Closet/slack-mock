@@ -62,7 +62,7 @@ function reply (path, requestBody) {
 
   slashCommands.calls.push({
     url: url,
-    body: utils.parseParams(path, requestBody),
+    params: utils.parseParams(path, requestBody),
     headers: this.req.headers,
     type: 'response_url'
   })

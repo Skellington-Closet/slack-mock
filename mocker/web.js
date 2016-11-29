@@ -32,7 +32,7 @@ function reply (path, requestBody) {
 
   web.calls.push({
     url: url,
-    body: utils.parseParams(path, requestBody),
+    params: utils.parseParams(path, requestBody),
     headers: this.req.headers
   })
 

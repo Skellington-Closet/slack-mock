@@ -17,6 +17,7 @@ incomingWebhooks.addResponse = function (opts) {
 }
 
 incomingWebhooks.register = function (url) {
+  // TODO this _could_ cause problems if we register the same host twice
   nock(url)
     .persist()
     .post(/.*/, () => true)

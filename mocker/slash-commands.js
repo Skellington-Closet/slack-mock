@@ -3,8 +3,9 @@
 const slashCommands = module.exports
 const request = require('request')
 const nock = require('nock')
-const qs = require('qs')
 const logger = require('../lib/logger')
+const utils = require('../lib/utils')
+const customResponses = require('../lib/custom-responses')
 let commandNumber = 0
 const responseUrlBase = 'https://slash-commands.slack-mock'
 
@@ -48,24 +49,23 @@ slashCommands.send = function (target, data) {
   return Promise.resolve()
 }
 
+slashCommands.addResponse = function (opts) {
+  customResponses.set('slash-commands', opts)
+}
+
 slashCommands.reset = function () {
   slashCommands.calls.splice(0, slashCommands.calls.length)
 }
 
 function reply (path, requestBody) {
-  if (typeof requestBody === 'string') {
-    requestBody = qs.parse(requestBody)
-  }
+  const url = `${responseUrlBase}${path.split('?')[0]}`
 
   slashCommands.calls.push({
-    url: `${responseUrlBase}${path}`,
-    body: requestBody,
+    url: url,
+    body: utils.parseBody(path, requestBody),
     headers: this.req.headers,
     type: 'response_url'
   })
 
-  return [
-    500,
-    {hello: 'world'}
-  ]
+  return customResponses.get('slash-commands', url)
 }

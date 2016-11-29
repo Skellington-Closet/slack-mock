@@ -3,8 +3,9 @@
 const interactiveButtons = module.exports
 const request = require('request')
 const nock = require('nock')
-const qs = require('qs')
 const logger = require('../lib/logger')
+const utils = require('../lib/utils')
+const customResponses = require('../lib/custom-responses')
 let commandNumber = 0
 const responseUrlBase = 'https://interactive-buttons.slack-mock'
 
@@ -48,24 +49,23 @@ interactiveButtons.send = function (target, data) {
   return Promise.resolve()
 }
 
+interactiveButtons.addResponse = function (opts) {
+  customResponses.set('interactive-buttons', opts)
+}
+
 interactiveButtons.reset = function () {
   interactiveButtons.calls.splice(0, interactiveButtons.calls.length)
 }
 
 function reply (path, requestBody) {
-  if (typeof requestBody === 'string') {
-    requestBody = qs.parse(requestBody)
-  }
+  const url = `${responseUrlBase}${path.split('?')[0]}`
 
   interactiveButtons.calls.push({
-    url: `${responseUrlBase}${path}`,
-    body: requestBody,
+    url: url,
+    body: utils.parseBody(path, requestBody),
     headers: this.req.headers,
     type: 'response_url'
   })
 
-  return [
-    200,
-    'OK'
-  ]
+  return customResponses.get('interactive-buttons', url)
 }

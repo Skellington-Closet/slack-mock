@@ -14,6 +14,8 @@ describe('mocker: slash commands', function () {
   let headersMock
   let bodyMock
   let loggerMock
+  let utilsMock
+  let customResponsesMock
   let slashCommands
   let target
   let data
@@ -25,11 +27,23 @@ describe('mocker: slash commands', function () {
       debug: sinon.stub()
     }
 
+    customResponsesMock = {
+      get: sinon.stub(),
+      reset: sinon.stub(),
+      set: sinon.stub()
+    }
+
+    utilsMock = {
+      parseBody: sinon.stub()
+    }
+
     requestMock = sinon.stub()
 
     slashCommands = proxyquire('../../mocker/slash-commands', {
       'request': requestMock,
-      '../lib/logger': loggerMock
+      '../lib/logger': loggerMock,
+      '../lib/utils': utilsMock,
+      '../lib/custom-responses': customResponsesMock
     })
   })
 
@@ -46,6 +60,14 @@ describe('mocker: slash commands', function () {
 
     requestMock.reset()
     requestMock.yields(null, resMock, bodyMock)
+
+    utilsMock.parseBody.reset()
+    utilsMock.parseBody.returns({parsed: 'body'})
+
+    customResponsesMock.get.reset()
+    customResponsesMock.set.reset()
+    customResponsesMock.reset.reset()
+    customResponsesMock.get.returns(200, 'OK', {})
 
     loggerMock.error.reset()
     loggerMock.info.reset()
@@ -103,13 +125,15 @@ describe('mocker: slash commands', function () {
 
         // one call for the immediate response, one for the delayed response_url request
         expect(slashCommands.calls).to.have.length(2)
+        expect(utilsMock.parseBody).to.have.been.calledWithMatch(/\/\d/, {jesse: 'pinkman'})
+        expect(customResponsesMock.get).to.have.been.calledWith('slash-commands')
 
         const secondCall = slashCommands.calls[1]
 
         expect(secondCall).to.have.keys(['url', 'body', 'headers', 'type'])
 
         expect(secondCall.url).to.equal(requestData.response_url)
-        expect(secondCall.body).to.deep.equal(postData)
+        expect(secondCall.body).to.deep.equal({parsed: 'body'})
         expect(secondCall.type).to.equal('response_url')
 
         done()
@@ -135,10 +159,34 @@ describe('mocker: slash commands', function () {
 
         // one call for the immediate response, one for the delayed response_url request
         expect(slashCommands.calls).to.have.length(2)
+        expect(utilsMock.parseBody).to.have.been.calledWithMatch(/\/\d/, 'jesse=pinkman')
+        expect(customResponsesMock.get).to.have.been.calledWith('slash-commands')
+
         const secondCall = slashCommands.calls[1]
-        expect(secondCall.body).to.deep.equal(formData)
+        expect(secondCall.body).to.deep.equal({parsed: 'body'})
         done()
       }
+    })
+  })
+
+  describe('addResponse', function () {
+    let url
+
+    beforeEach(function () {
+      url = 'http://addResponse.not.real'
+    })
+
+    it('should add a custom response', function () {
+      const opts = {
+        url: url,
+        statusCode: 500,
+        body: {not: 'ok'},
+        headers: {walter: 'white'}
+      }
+
+      slashCommands.addResponse(opts)
+
+      expect(customResponsesMock.set).to.have.been.calledWith('slash-commands', opts)
     })
   })
 

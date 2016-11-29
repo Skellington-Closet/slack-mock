@@ -11,6 +11,7 @@ chai.use(require('sinon-chai'))
 describe('mocker: incoming webhooks', function () {
   let loggerMock
   let incomingWebhooks
+  let utilsMock
   let customResponsesMock
 
   before(function () {
@@ -26,11 +27,16 @@ describe('mocker: incoming webhooks', function () {
       set: sinon.stub()
     }
 
+    utilsMock = {
+      parseBody: sinon.stub()
+    }
+
     // I ran into some weird scoping issues by redefining this in a beforeEach
     // moving to a before() fixed them
     incomingWebhooks = proxyquire('../../mocker/incoming-webhooks', {
       '../lib/logger': loggerMock,
-      '../lib/custom-responses': customResponsesMock
+      '../lib/custom-responses': customResponsesMock,
+      '../lib/utils': utilsMock
     })
   })
 
@@ -38,6 +44,9 @@ describe('mocker: incoming webhooks', function () {
     loggerMock.error.reset()
     loggerMock.info.reset()
     loggerMock.debug.reset()
+
+    utilsMock.parseBody.reset()
+    utilsMock.parseBody.returns({parsed: 'body'})
 
     customResponsesMock.get.reset()
     customResponsesMock.set.reset()
@@ -73,7 +82,7 @@ describe('mocker: incoming webhooks', function () {
         sendToUrl(url, {}, afterRegister)
       }
 
-      function afterRegister (err, res, body) {
+      function afterRegister (err) {
         expect(err).not.to.exist
 
         expect(customResponsesMock.get).to.have.been.calledWith('incoming-webhooks', url)
@@ -118,12 +127,13 @@ describe('mocker: incoming webhooks', function () {
       }
 
       sendToUrl(url, body, () => {
+        expect(utilsMock.parseBody).to.have.been.calledWith('/', {walter: 'white'})
         expect(incomingWebhooks.calls).to.have.length(1)
 
         const firstCall = incomingWebhooks.calls[0]
         expect(firstCall).to.have.keys(['url', 'body', 'headers'])
         expect(firstCall.url).to.equal(url)
-        expect(firstCall.body).to.deep.equal({walter: 'white'})
+        expect(firstCall.body).to.deep.equal({parsed: 'body'})
         expect(firstCall.headers).to.exist
 
         done()
@@ -140,9 +150,10 @@ describe('mocker: incoming webhooks', function () {
         uri: url,
         form: formBody
       }, () => {
+        expect(utilsMock.parseBody).to.have.been.calledWith('/', 'walter=white')
         expect(incomingWebhooks.calls).to.have.length(1)
         const firstCall = incomingWebhooks.calls[0]
-        expect(firstCall.body).to.deep.equal({walter: 'white'})
+        expect(firstCall.body).to.deep.equal({parsed: 'body'})
 
         done()
       })

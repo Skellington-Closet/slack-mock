@@ -2,8 +2,8 @@
 
 const incomingWebhooks = module.exports
 const nock = require('nock')
-const qs = require('qs')
 const customResponses = require('../lib/custom-responses')
+const utils = require('../lib/utils')
 
 incomingWebhooks.calls = []
 
@@ -28,16 +28,10 @@ function reply (url) {
   return record
 
   function record (path, requestBody) {
-    const headers = this.req.headers
-
-    if (headers['content-type'] === 'application/x-www-form-urlencoded') {
-      requestBody = qs.parse(requestBody)
-    }
-
     incomingWebhooks.calls.push({
       url: url,
-      body: requestBody,
-      headers: headers
+      body: utils.parseBody(path, requestBody),
+      headers: this.req.headers
     })
 
     return customResponses.get('incoming-webhooks', url)

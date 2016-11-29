@@ -14,6 +14,8 @@ describe('mocker: interactive buttons', function () {
   let headersMock
   let bodyMock
   let loggerMock
+  let utilsMock
+  let customResponsesMock
   let interactiveButtons
   let target
   let data
@@ -25,11 +27,23 @@ describe('mocker: interactive buttons', function () {
       debug: sinon.stub()
     }
 
+    customResponsesMock = {
+      get: sinon.stub(),
+      reset: sinon.stub(),
+      set: sinon.stub()
+    }
+
+    utilsMock = {
+      parseBody: sinon.stub()
+    }
+
     requestMock = sinon.stub()
 
     interactiveButtons = proxyquire('../../mocker/interactive-buttons', {
       'request': requestMock,
-      '../lib/logger': loggerMock
+      '../lib/logger': loggerMock,
+      '../lib/utils': utilsMock,
+      '../lib/custom-responses': customResponsesMock
     })
   })
 
@@ -46,6 +60,14 @@ describe('mocker: interactive buttons', function () {
 
     requestMock.reset()
     requestMock.yields(null, resMock, bodyMock)
+
+    utilsMock.parseBody.reset()
+    utilsMock.parseBody.returns({parsed: 'body'})
+
+    customResponsesMock.get.reset()
+    customResponsesMock.set.reset()
+    customResponsesMock.reset.reset()
+    customResponsesMock.get.returns(200, 'OK', {})
 
     loggerMock.error.reset()
     loggerMock.info.reset()
@@ -101,18 +123,24 @@ describe('mocker: interactive buttons', function () {
       function whatHappened (err, res, body) {
         if (err) return done(err)
 
-        // one call for the immediate response, one for the delayed response_url request
-        expect(interactiveButtons.calls).to.have.length(2)
+        try {
+          // one call for the immediate response, one for the delayed response_url request
+          expect(interactiveButtons.calls).to.have.length(2)
+          expect(utilsMock.parseBody).to.have.been.calledWithMatch(/\/\d/, {jesse: 'pinkman'})
+          expect(customResponsesMock.get).to.have.been.calledWith('interactive-buttons')
 
-        const secondCall = interactiveButtons.calls[1]
+          const secondCall = interactiveButtons.calls[1]
 
-        expect(secondCall).to.have.keys(['url', 'body', 'headers', 'type'])
+          expect(secondCall).to.have.keys(['url', 'body', 'headers', 'type'])
 
-        expect(secondCall.url).to.equal(requestData.response_url)
-        expect(secondCall.body).to.deep.equal(postData)
-        expect(secondCall.type).to.equal('response_url')
+          expect(secondCall.url).to.equal(requestData.response_url)
+          expect(secondCall.body).to.deep.equal({parsed: 'body'})
+          expect(secondCall.type).to.equal('response_url')
 
-        done()
+          done()
+        } catch (e) {
+          done(e)
+        }
       }
     })
 
@@ -133,12 +161,40 @@ describe('mocker: interactive buttons', function () {
       function whatHappened (err) {
         if (err) return done(err)
 
-        // one call for the immediate response, one for the delayed response_url request
-        expect(interactiveButtons.calls).to.have.length(2)
-        const secondCall = interactiveButtons.calls[1]
-        expect(secondCall.body).to.deep.equal(formData)
-        done()
+        try {
+          // one call for the immediate response, one for the delayed response_url request
+          expect(interactiveButtons.calls).to.have.length(2)
+          expect(utilsMock.parseBody).to.have.been.calledWithMatch(/\/\d/, 'jesse=pinkman')
+          expect(customResponsesMock.get).to.have.been.calledWith('interactive-buttons')
+
+          const secondCall = interactiveButtons.calls[1]
+          expect(secondCall.body).to.deep.equal({parsed: 'body'})
+          done()
+        } catch (e) {
+          done(e)
+        }
       }
+    })
+  })
+
+  describe('addResponse', function () {
+    let url
+
+    beforeEach(function () {
+      url = 'http://addResponse.not.real'
+    })
+
+    it('should add a custom response', function () {
+      const opts = {
+        url: url,
+        statusCode: 500,
+        body: {not: 'ok'},
+        headers: {walter: 'white'}
+      }
+
+      interactiveButtons.addResponse(opts)
+
+      expect(customResponsesMock.set).to.have.been.calledWith('interactive-buttons', opts)
     })
   })
 

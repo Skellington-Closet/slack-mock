@@ -4,9 +4,11 @@ const incomingWebhooks = module.exports
 const nock = require('nock')
 const customResponses = require('../lib/custom-responses')
 const utils = require('../lib/utils')
+const logger = require('../lib/logger')
+const baseUrl = 'https://hooks.slack.com'
 
 // Slack accepts both GET and POST requests, will intercept API and OAuth calls
-nock('https://hooks.slack.com')
+nock(baseUrl)
   .persist()
   .post(/.*/, () => true)
   .reply(reply)
@@ -14,6 +16,8 @@ nock('https://hooks.slack.com')
 incomingWebhooks.calls = []
 
 incomingWebhooks.reset = function () {
+  logger.debug(`resetting incoming-webhooks`)
+
   customResponses.reset('incoming-webhooks')
   incomingWebhooks.calls.splice(0, incomingWebhooks.calls.length)
 }
@@ -23,7 +27,9 @@ incomingWebhooks.addResponse = function (opts) {
 }
 
 function reply (path, requestBody) {
-  const url = `https://hooks.slack.com${path}`
+  const url = `${baseUrl}${path}`
+
+  logger.debug(`intercepted incoming-webhooks request`)
 
   incomingWebhooks.calls.push({
     url: url,

@@ -4,6 +4,7 @@ const web = module.exports
 const nock = require('nock')
 const customResponses = require('../lib/custom-responses')
 const utils = require('../lib/utils')
+const logger = require('../lib/logger')
 const rtm = require('./rtm')
 
 web.calls = []
@@ -19,6 +20,7 @@ nock('https://slack.com')
   .reply(reply)
 
 web.reset = function () {
+  logger.debug(`resetting web`)
   web.calls.splice(0, web.calls.length)
   customResponses.reset('web')
 }
@@ -29,6 +31,8 @@ web.addResponse = function (opts) {
 
 function reply (path, requestBody) {
   const url = `https://slack.com${path.split('?')[0]}`
+
+  logger.debug(`intercepted web request: ${url}`)
 
   web.calls.push({
     url: url,

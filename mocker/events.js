@@ -18,6 +18,8 @@ events.send = function (target, data) {
       return logger.error(`error receiving response to events api ${target}`, err)
     }
 
+    logger.debug(`received response to events request`)
+
     events.calls.push({
       url: target,
       body: body,
@@ -30,5 +32,6 @@ events.send = function (target, data) {
 }
 
 events.reset = function () {
+  logger.debug(`resetting events`)
   events.calls.splice(0, events.calls.length)
 }

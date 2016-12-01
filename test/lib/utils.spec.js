@@ -9,6 +9,7 @@ chai.use(require('sinon-chai'))
 
 describe('utils', function () {
   let qsMock
+  let loggerMock
   let utils
 
   before(function () {
@@ -16,12 +17,23 @@ describe('utils', function () {
       parse: sinon.stub()
     }
 
+    loggerMock = {
+      error: sinon.stub(),
+      info: sinon.stub(),
+      debug: sinon.stub()
+    }
+
     utils = proxyquire('../../lib/utils', {
+      './logger': loggerMock,
       'qs': qsMock
     })
   })
 
   beforeEach(function () {
+    loggerMock.error.reset()
+    loggerMock.info.reset()
+    loggerMock.debug.reset()
+
     qsMock.parse.reset()
     qsMock.parse.returns({parsed: true})
   })

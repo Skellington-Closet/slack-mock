@@ -34,7 +34,6 @@ module.exports = function (config) {
     },
     incomingWebhooks: {
       addResponse: incomingWebhooks.addResponse,
-      register: incomingWebhooks.register,
       reset: incomingWebhooks.reset,
       calls: incomingWebhooks.calls
     },

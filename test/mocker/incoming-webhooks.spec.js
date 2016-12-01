@@ -65,38 +65,11 @@ describe('mocker: incoming webhooks', function () {
     }, cb)
   }
 
-  describe('register', function () {
-    let url
-
-    beforeEach(function () {
-      url = 'http://register.not.real'
-    })
-
-    it('should register a url', function (done) {
-      sendToUrl(url, {}, beforeRegister)
-
-      function beforeRegister (err) {
-        expect(err).to.exist
-
-        incomingWebhooks.register(url)
-        sendToUrl(url, {}, afterRegister)
-      }
-
-      function afterRegister (err) {
-        expect(err).not.to.exist
-
-        expect(customResponsesMock.get).to.have.been.calledWith('incoming-webhooks', url)
-        done()
-      }
-    })
-  })
-
   describe('addResponse', function () {
     let url
 
     beforeEach(function () {
-      url = 'http://addResponse.not.real'
-      incomingWebhooks.register(url)
+      url = 'https://hooks.slack.com/addResponse'
     })
 
     it('should add a custom response', function () {
@@ -117,8 +90,7 @@ describe('mocker: incoming webhooks', function () {
     let url
 
     beforeEach(function () {
-      url = 'http://calls.not.real'
-      incomingWebhooks.register(url)
+      url = 'https://hooks.slack.com/calls'
     })
 
     it('should record calls', function (done) {
@@ -127,7 +99,7 @@ describe('mocker: incoming webhooks', function () {
       }
 
       sendToUrl(url, body, () => {
-        expect(utilsMock.parseParams).to.have.been.calledWith('/', {walter: 'white'})
+        expect(utilsMock.parseParams).to.have.been.calledWith('/calls', {walter: 'white'})
         expect(incomingWebhooks.calls).to.have.length(1)
 
         const firstCall = incomingWebhooks.calls[0]
@@ -150,7 +122,7 @@ describe('mocker: incoming webhooks', function () {
         uri: url,
         form: formBody
       }, () => {
-        expect(utilsMock.parseParams).to.have.been.calledWith('/', 'walter=white')
+        expect(utilsMock.parseParams).to.have.been.calledWith('/calls', 'walter=white')
         expect(incomingWebhooks.calls).to.have.length(1)
         const firstCall = incomingWebhooks.calls[0]
         expect(firstCall.params).to.deep.equal({parsed: 'body'})
@@ -164,8 +136,7 @@ describe('mocker: incoming webhooks', function () {
     let url
 
     beforeEach(function () {
-      url = 'http://reset.not.real'
-      incomingWebhooks.register(url)
+      url = 'https://hooks.slack.com/reset'
     })
 
     it('should reset call count', function (done) {

@@ -4,7 +4,7 @@
   "description": "Slack API mocker",
   "main": "index.js",
   "scripts": {
-    "pretest": "standard index.js mocker/*.js lib/*.js test/**/*.js --fix",
+    "pretest": "standard index.js mocker/*.js lib/*.js test/*.js test/**/*.js --fix",
     "test": "istanbul cover --report lcov --dir ./coverage/ _mocha --recursive ./test/ --grep ./test/**/*.spec.js -- --colors --reporter spec"
   },
   "author": "",

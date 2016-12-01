@@ -16,6 +16,8 @@ module.exports = function (config) {
     return module.exports.instance
   }
 
+  config = config || {}
+
   if (config.logLevel) {
     logger.level = config.logLevel
   }
@@ -26,40 +28,43 @@ module.exports = function (config) {
 
   module.exports.instance = {
     events: {
-      send: events.send.bind(events),
-      reset: events.reset.bind(events),
+      send: events.send,
+      reset: events.reset,
       calls: events.calls
     },
     incomingWebhooks: {
-      register: incomingWebhooks.register.bind(incomingWebhooks),
-      addResponse: incomingWebhooks.addResponse.bind(incomingWebhooks),
-      reset: incomingWebhooks.reset.bind(incomingWebhooks),
+      addResponse: incomingWebhooks.addResponse,
+      register: incomingWebhooks.register,
+      reset: incomingWebhooks.reset,
       calls: incomingWebhooks.calls
     },
     interactiveButtons: {
-      send: interactiveButtons.send.bind(interactiveButtons),
-      reset: interactiveButtons.reset.bind(interactiveButtons),
+      addResponse: interactiveButtons.addResponse,
+      send: interactiveButtons.send,
+      reset: interactiveButtons.reset,
       calls: interactiveButtons.calls
     },
     outgoingWebhooks: {
-      send: outgoingWebhooks.send.bind(outgoingWebhooks),
-      reset: outgoingWebhooks.reset.bind(outgoingWebhooks),
+      send: outgoingWebhooks.send,
+      reset: outgoingWebhooks.reset,
       calls: outgoingWebhooks.calls
     },
     rtm: {
-      send: rtm.send.bind(rtm),
-      reset: rtm.reset.bind(rtm),
+      broadcast: rtm.broadcast,
+      send: rtm.send,
+      reset: rtm.reset,
       calls: rtm.calls,
       clients: rtm.clients
     },
     slashCommands: {
-      send: slashCommands.send.bind(slashCommands),
-      reset: slashCommands.reset.bind(slashCommands),
+      addResponse: slashCommands.addResponse,
+      send: slashCommands.send,
+      reset: slashCommands.reset,
       calls: slashCommands.calls
     },
     web: {
-      reset: web.reset.bind(web),
-      addResponse: web.addResponse.bind(web),
+      addResponse: web.addResponse,
+      reset: web.reset,
       calls: web.calls
     },
     reset: function () {

@@ -15,6 +15,9 @@ Config options are:
   - `logLevel` (String, optional) The log level to use. One of error, warn, info, verbose, debug, silly. Defaults to info.
 
 
+---
+
+
 ### `instance`
 
 The configured instance of the Slack Mock `slackMock.instance` object. This is the same object returned from `slackMock(config)` 
@@ -37,12 +40,12 @@ This includes both responses to the original Events API request and requests to 
   - `statusCode` The status code of the intercepted request
 
 
+---
+
+
 ### `instance.incomingWebhooks` (Incoming Webhooks)
 
-The `incomingWebhooks` object mocks sending payloads from you Slack App to Incoming Webhooks.
-
-- `register`: `function(url)` Registers a Slack Incoming Webhook endpoint your Slack app will POST to.
-Incoming webhook urls should be registered **before** they are used.
+The `incomingWebhooks` object mocks sending payloads from you Slack App to all Incoming Webhooks at `https://hooks.slack.com/`.
 
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
 receiving a post to a registered endpoint. This method can be called multiple times. Responses
@@ -60,6 +63,9 @@ will be used in a FIFO order. Options are:
   - `headers` The headers of the intercepted request as an Object
   - `statusCode` The status code of the intercepted request. Only captured for immediate responses, not for using the `response_url`.
   - `type` Either `response` or `response_url`. Indicates how the call was intercepted.
+
+
+---
 
 
 ### `instance.interactiveButtons` (Interactive Buttons)
@@ -106,6 +112,8 @@ The body will include a `response_url` parameter Returns an immediately resolved
   - `statusCode` The status code of the intercepted request.
 
 
+---
+
 
 ### `instance.rtm` (RTM)
 
@@ -125,6 +133,9 @@ Returns an immediately resolved Promise for easy chaining.
   - `message` The message that was received by the RTM API as an Object.
   - `client` A reference to the websocket client that received the payload.
   - `rawMessage` The original String message received by the RTM API. Good for troubleshooting.
+
+
+---
 
 
 ### `instance.slashCommands` (Slash Commands)
@@ -153,6 +164,9 @@ This includes both responses to the original Slash Command request and requests 
   - `type` Either `response` or `response_url`. Indicates how the call was intercepted.
 
 
+---
+
+
 ### `instance.web` (Web API)
 
 The `web` object receives requests to the Slack Web API and responds with mocked responses.
@@ -175,6 +189,9 @@ Each call will contain
   - `url` The url of the call that was intercepted
   - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object
   - `headers` The headers of the intercepted request as an Object
+
+
+---
 
 
 ### `instance.reset`: `function()`

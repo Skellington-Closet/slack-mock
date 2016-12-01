@@ -5,6 +5,12 @@ const nock = require('nock')
 const customResponses = require('../lib/custom-responses')
 const utils = require('../lib/utils')
 
+// Slack accepts both GET and POST requests, will intercept API and OAuth calls
+nock('https://hooks.slack.com')
+  .persist()
+  .post(/.*/, () => true)
+  .reply(reply)
+
 incomingWebhooks.calls = []
 
 incomingWebhooks.reset = function () {
@@ -16,24 +22,14 @@ incomingWebhooks.addResponse = function (opts) {
   customResponses.set('incoming-webhooks', opts)
 }
 
-incomingWebhooks.register = function (url) {
-  // TODO this _could_ cause problems if we register the same host twice
-  nock(url)
-    .persist()
-    .post(/.*/, () => true)
-    .reply(reply(url))
-}
+function reply (path, requestBody) {
+  const url = `https://hooks.slack.com${path}`
 
-function reply (url) {
-  return record
+  incomingWebhooks.calls.push({
+    url: url,
+    params: utils.parseParams(path, requestBody),
+    headers: this.req.headers
+  })
 
-  function record (path, requestBody) {
-    incomingWebhooks.calls.push({
-      url: url,
-      params: utils.parseParams(path, requestBody),
-      headers: this.req.headers
-    })
-
-    return customResponses.get('incoming-webhooks', url)
-  }
+  return customResponses.get('incoming-webhooks', url)
 }

@@ -33,7 +33,6 @@ describe('slack-mock', function () {
 
     incomingWebhooksMock = {
       addResponse: sinon.stub(),
-      register: sinon.stub(),
       reset: sinon.stub(),
       calls: []
     }
@@ -129,9 +128,8 @@ describe('slack-mock', function () {
     })
 
     it('should expose incoming webhooks api', function () {
-      expect(instance.incomingWebhooks).to.have.keys(['addResponse', 'register', 'reset', 'calls'])
+      expect(instance.incomingWebhooks).to.have.keys(['addResponse', 'reset', 'calls'])
       expect(instance.incomingWebhooks.addResponse, 'addResponse').to.equal(incomingWebhooksMock.addResponse)
-      expect(instance.incomingWebhooks.register, 'register').to.equal(incomingWebhooksMock.register)
       expect(instance.incomingWebhooks.reset, 'reset').to.equal(incomingWebhooksMock.reset)
       expect(instance.incomingWebhooks.calls, 'calls').to.equal(incomingWebhooksMock.calls)
     })

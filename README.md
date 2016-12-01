@@ -32,7 +32,7 @@ The body will include a `response_url` parameter. Returns an immediately resolve
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Events API POST.
 This includes both responses to the original Events API request and requests to the `response_url`.
   - `url` The url of the call that was intercepted
-  - `body` The body of the intercepted request as an Object
+  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object
   - `headers` The headers of the intercepted request as an Object
   - `statusCode` The status code of the intercepted request
 
@@ -42,9 +42,10 @@ This includes both responses to the original Events API request and requests to 
 The `incomingWebhooks` object mocks sending payloads from you Slack App to Incoming Webhooks.
 
 - `register`: `function(url)` Registers a Slack Incoming Webhook endpoint your Slack app will POST to.
+Incoming webhook urls should be registered **before** they are used.
 
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
-receiving a post to a registered endpoint. This method can be called multiple times per webhook. Responses
+receiving a post to a registered endpoint. This method can be called multiple times. Responses
 will be used in a FIFO order. Options are: 
   - `url` (String, required) The Incoming Webhook URL your app will be POSTing to.
   - `statusCode` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
@@ -55,7 +56,7 @@ will be used in a FIFO order. Options are:
 
 - `calls`: `Array` An array of payloads received your from Slack app to an Incoming Webhook url.
   - `url` The url of the call that was intercepted
-  - `body` The body of the intercepted request as an Object
+  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object
   - `headers` The headers of the intercepted request as an Object
   - `statusCode` The status code of the intercepted request. Only captured for immediate responses, not for using the `response_url`.
   - `type` Either `response` or `response_url`. Indicates how the call was intercepted.
@@ -68,12 +69,22 @@ The `interactiveButtons` object mocks sending payloads from Slack interactive bu
 - `send`: `function(targetUrl, body)` Sends a payload from a Slack interactive button to your Slack App target URL.
 The body will include a `response_url` parameter. Returns an immediately resolved Promise for easy chaining.
 
+- `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
+receiving a post to a registered endpoint. This method can be called multiple times. Responses
+will be used in a FIFO order. Options are: 
+  - `url` (String, required) The Incoming Webhook URL your app will be POSTing to.
+  - `statusCode` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
+  - `body` (Object, optional) The response body to reply with. Defaults to `{ok: true}`
+  - `headers` (Object, optional) The HTTP headers to reply with. Defaults to `{}`
+
+
 - `reset`: `function()` Empties the `interactiveButtons.calls` array.
 
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Slack interactive button POST.
 This includes both responses to the original Slack interactive button request and requests to the `response_url`.
-  - `url` The url of the call that was intercepted
-  - `body` The body of the intercepted request as an Object
+  - `url` The url of the call that was intercepted. For type `response`, this will be the endpoint in your Slack app used in the call to 
+  `interactiveButtons.send`, for type `response_url` this will be the `response_url` from the payload sent to your Slack app.
+  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object
   - `headers` The headers of the intercepted request as an Object
   - `statusCode` The status code of the intercepted request. Only captured for immediate responses, not for using the `response_url`.
   - `type` Either `response` or `response_url`. Indicates how the call was intercepted.
@@ -90,7 +101,7 @@ The body will include a `response_url` parameter Returns an immediately resolved
 
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Outgoing Webhook POST.
   - `url` The url of the call that was intercepted
-  - `body` The body of the intercepted request as an Object
+  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object
   - `headers` The headers of the intercepted request as an Object
   - `statusCode` The status code of the intercepted request.
 
@@ -111,9 +122,10 @@ Returns an immediately resolved Promise for easy chaining.
 - `reset`: `function()` Clears the `rtm.calls` array and closes connections to all connected clients.
 
 - `calls`: `Array` An array of payloads received by the RTM API from your Slack app.
-These are the exact message received with the following additions
-  - `_client` A reference to the websocket client that received the payload.
-  
+  - `message` The message that was received by the RTM API as an Object.
+  - `client` A reference to the websocket client that received the payload.
+  - `rawMessage` The original String message received by the RTM API. Good for troubleshooting.
+
 
 ### `instance.slashCommands` (Slash Commands)
 
@@ -122,12 +134,20 @@ The `slashCommands` object mocks sending payloads from a Slack Slash Command to 
 - `send`: `function(targetUrl, body)` Sends a payload from a Slash Command to your Slack App target URL.
 The body will include a `response_url` parameter Returns an immediately resolved Promise for easy chaining.
 
+- `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
+receiving a post to a registered endpoint. This method can be called multiple times. Responses
+will be used in a FIFO order. Options are: 
+  - `url` (String, required) The Incoming Webhook URL your app will be POSTing to.
+  - `statusCode` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
+  - `body` (Object, optional) The response body to reply with. Defaults to `{ok: true}`
+  - `headers` (Object, optional) The HTTP headers to reply with. Defaults to `{}`
+
 - `reset`: `function()` Empties the `slashCommands.calls` array.
 
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Slash Command POST.
 This includes both responses to the original Slash Command request and requests to the `response_url`.
   - `url` The url of the call that was intercepted
-  - `body` The body of the intercepted request as an Object
+  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object
   - `headers` The headers of the intercepted request as an Object
   - `statusCode` The status code of the intercepted request. Only captured for immediate responses, not for using the `response_url`.
   - `type` Either `response` or `response_url`. Indicates how the call was intercepted.
@@ -137,10 +157,11 @@ This includes both responses to the original Slash Command request and requests 
 
 The `web` object receives requests to the Slack Web API and responds with mocked responses.
 
-This mock can be used both for the Web API and the OAuth endpoint (`https://slack.com/oauth/authorize`). It supports both GET and POST requests to all endpoints.
+This mock can be used both for the Web API and the OAuth endpoint (`https://slack.com/oauth/authorize`). 
+It supports both GET and POST requests to all endpoints.
 
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
-receiving a request to a Web API endpoint. Endpoints without a custom response will return 200 OK.
+receiving a request to a Web API endpoint. Endpoints without a custom response will return 200 `{ok: true}`.
 This method can be called multiple times per endpoint. Responses will be used in a FIFO order. Options are: 
   - `url` (String, required) Web API URL your app will be POSTing to.
   - `status` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
@@ -152,7 +173,7 @@ This method can be called multiple times per endpoint. Responses will be used in
 - `calls`: `Array` An array of payloads received your from Slack app to a Web API endpoint.
 Each call will contain
   - `url` The url of the call that was intercepted
-  - `body` The body of the intercepted request as an Object
+  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object
   - `headers` The headers of the intercepted request as an Object
 
 

@@ -2,92 +2,44 @@
 
 const web = module.exports
 const nock = require('nock')
-const qs = require('qs')
-const logger = require('../lib/logger')
+const customResponses = require('../lib/custom-responses')
+const utils = require('../lib/utils')
 const rtm = require('./rtm')
-let customResponses = {}
 
 web.calls = []
 
-web._ = {}
+// Slack accepts both GET and POST requests, will intercept API and OAuth calls
+nock('https://slack.com')
+  .persist()
+  .get(/.*/)
+  .query(true)
+  .reply(reply)
 
-web._.init = function () {
-  // for OAuth
-  nock('https://slack.com/oauth/authorize')
-    .persist()
-    .get(/.*/)
-    .query(true)
-    .reply(reply)
-
-    .post(/.*/, () => true)
-    .reply(replyOAuth)
-
-  // Slack accepts both GET and POST requests
-  nock('https://slack.com/api')
-    .persist()
-    .get(/.*/)
-    .query(true)
-    .reply(reply)
-
-    .post(/.*/, () => true)
-    .reply(replyApi)
-}
+  .post(/.*/, () => true)
+  .reply(reply)
 
 web.reset = function () {
   web.calls.splice(0, web.calls.length)
-  customResponses = {}
+  customResponses.reset('web')
 }
 
-web.addResponse = function (cfg) {
-  if (!customResponses[cfg.url]) {
-    customResponses[cfg.url] = []
-  }
-
-  customResponses[cfg.url].push({
-    statusCode: cfg.statusCode || 200,
-    body: cfg.body || {ok: true},
-    headers: cfg.headers || {}
-  })
+web.addResponse = function (opts) {
+  customResponses.set('web', opts)
 }
 
-function replyOAuth (uri, requestBody) {
-  return reply('https://slack.com/oauth/authorize', requestBody)
-}
-
-function replyApi (uri, requestBody) {
-  return reply(`https://slack.com${uri}`, requestBody)
-}
-
-function reply (uri, requestBody) {
-  const response = getResponse(uri)
-
-  if (typeof requestBody === 'string') {
-    requestBody = qs.parse(requestBody)
-  }
+function reply (path, requestBody) {
+  const url = `https://slack.com${path.split('?')[0]}`
 
   web.calls.push({
-    url: uri,
-    body: requestBody,
+    url: url,
+    params: utils.parseParams(path, requestBody),
     headers: this.req.headers
   })
 
-  return [
-    response.statusCode,
-    response.body,
-    response.headers
-  ]
-}
-
-function getResponse (action) {
-  let response = {statusCode: 200, body: {ok: true}}
-
-  if (customResponses[action] && customResponses[action].length) {
-    response = customResponses[action].shift()
-    logger.debug('responding to web api with override', response)
-  }
-
-  if (action === 'rtm.start' && response.body.ok) {
-    response.body.url = rtm._.url
+  const response = customResponses.get('web', url)
+  const body = response[1]
+  if (/rtm\.start/.test(url) && body.ok) {
+    body.url = rtm._.url
   }
 
   return response

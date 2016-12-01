@@ -25,29 +25,24 @@ rtm.reset = function () {
 rtm.broadcast = function (message) {
   return Promise.all(rtm.clients.map((client) => {
     return rtm.send(message, client)
+      .catch(() => {}) // don't fail
   }))
 }
 
 rtm.send = function (message, client) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     try {
       client.send(JSON.stringify(message), (e) => {
         if (e) {
-          logger.info(`could not broadcast rtm message to all clients`, e)
+          logger.error(`could not send rtm message to client`, e)
+          return reject(e)
         }
-        resolve()
       })
     } catch (e) {
-      logger.info(`could not broadcast rtm message to all clients`, e)
-      resolve()
+      logger.error(`could not send rtm message to client`, e)
+      return reject(e)
     }
-  })
-  .then(delay(10))
-}
-
-function delay (ms) {
-  return () => new Promise((resolve) => {
-    setTimeout(resolve, ms)
+    resolve()
   })
 }
 
@@ -63,7 +58,7 @@ function setUpWebsocketServer (port) {
       recordMessage(client, message)
     })
 
-    logger.info(`RTM connected on port ${port}`)
+    logger.info(`client connected to RTM API`)
   })
 }
 
@@ -71,14 +66,18 @@ function recordMessage (client, message) {
   logger.debug('message received')
   logger.debug(message)
 
-  message._client = client
+  let parsedMessage = null
 
   try {
-    rtm.calls.push(JSON.parse(message))
+    parsedMessage = JSON.parse(message)
   } catch (err) {
     logger.error('could not parse incoming RTM message')
     logger.error(err)
-
-    rtm.calls.push(message)
   }
+
+  rtm.calls.push({
+    rawMessage: message,
+    client: client,
+    message: parsedMessage
+  })
 }

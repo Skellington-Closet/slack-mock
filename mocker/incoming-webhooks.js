@@ -2,63 +2,38 @@
 
 const incomingWebhooks = module.exports
 const nock = require('nock')
-const qs = require('qs')
-const logger = require('../lib/logger')
-let customResponses = {}
+const customResponses = require('../lib/custom-responses')
+const utils = require('../lib/utils')
 
 incomingWebhooks.calls = []
 
 incomingWebhooks.reset = function () {
-  customResponses = {}
+  customResponses.reset('incoming-webhooks')
   incomingWebhooks.calls.splice(0, incomingWebhooks.calls.length)
 }
 
 incomingWebhooks.addResponse = function (opts) {
-  if (!customResponses[opts.url]) {
-    customResponses[opts.url] = []
-  }
-
-  customResponses[opts.url].push({
-    statusCode: opts.statusCode || 200,
-    body: opts.body || {ok: true},
-    headers: opts.headers || {}
-  })
+  customResponses.set('incoming-webhooks', opts)
 }
 
 incomingWebhooks.register = function (url) {
+  // TODO this _could_ cause problems if we register the same host twice
   nock(url)
     .persist()
     .post(/.*/, () => true)
-    .reply(reply)
+    .reply(reply(url))
 }
 
-function reply (url, requestBody) {
-  const headers = this.req.headers
+function reply (url) {
+  return record
 
-  if (headers['content-type'] === 'application/x-www-form-urlencoded') {
-    requestBody = qs.parse(requestBody)
+  function record (path, requestBody) {
+    incomingWebhooks.calls.push({
+      url: url,
+      params: utils.parseParams(path, requestBody),
+      headers: this.req.headers
+    })
+
+    return customResponses.get('incoming-webhooks', url)
   }
-
-  incomingWebhooks.calls.push({
-    url: url,
-    body: requestBody,
-    headers: headers
-  })
-
-  return getResponse(url)
-}
-
-function getResponse (url) {
-  let response = {status: 200, body: {ok: true}, headers: {}}
-
-  if (customResponses[url] && customResponses[url].length) {
-    response = customResponses[url].shift()
-    logger.debug('responding to incoming webhook with override', response)
-  }
-
-  return [
-    response.statusCode,
-    response.body,
-    response.headers
-  ]
 }

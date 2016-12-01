@@ -3,13 +3,10 @@
 const events = module.exports
 const request = require('request')
 const logger = require('../lib/logger')
-let commandNumber = 0
 
 events.calls = []
 
 events.send = function (target, data) {
-  data.response_url = `https://slack-mock/events-api/${++commandNumber}`
-
   // the events api uses content-type application/json
   request({
     uri: target,

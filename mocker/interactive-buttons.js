@@ -31,11 +31,13 @@ interactiveButtons.send = function (target, data) {
 
     if (typeof body === 'string') {
       try {
-        body = JSON.parse(body)
+        body = JSON.parse(body) // TODO necessary?
       } catch (e) {
         logger.error('could not parse interactive response as json', e)
       }
     }
+
+    logger.debug(`received response to interactive-buttons request: ${target}`)
 
     interactiveButtons.calls.push({
       url: target,
@@ -54,11 +56,14 @@ interactiveButtons.addResponse = function (opts) {
 }
 
 interactiveButtons.reset = function () {
+  logger.debug(`resetting interactive-buttons`)
   interactiveButtons.calls.splice(0, interactiveButtons.calls.length)
 }
 
 function reply (path, requestBody) {
   const url = `${responseUrlBase}${path.split('?')[0]}`
+
+  logger.debug(`intercepted interactive-buttons request`)
 
   interactiveButtons.calls.push({
     url: url,

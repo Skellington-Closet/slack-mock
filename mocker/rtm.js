@@ -16,6 +16,8 @@ rtm._.init = function (config) {
 }
 
 rtm.reset = function () {
+  logger.debug(`resetting rtm`)
+
   // in place reset
   rtm.calls.splice(0, rtm.calls.length)
   rtm.clients.forEach((client) => client.close())
@@ -74,6 +76,8 @@ function recordMessage (client, message) {
     logger.error('could not parse incoming RTM message')
     logger.error(err)
   }
+
+  logger.debug(`intercepted RTM message`)
 
   rtm.calls.push({
     rawMessage: message,

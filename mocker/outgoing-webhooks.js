@@ -13,8 +13,10 @@ outgoingWebhooks.send = function (targetUrl, outgoingBody) {
     body: outgoingBody
   }, (err, res, body) => {
     if (err) {
-      return logger.error(`error receiving response to outgoing webhook ${targetUrl}`, err)
+      return logger.error(`error receiving response to outgoing-webhooks ${targetUrl}`, err)
     }
+
+    logger.debug(`received response to outgoing-webhooks request: ${targetUrl}`)
 
     outgoingWebhooks.calls.push({
       url: targetUrl,
@@ -28,5 +30,6 @@ outgoingWebhooks.send = function (targetUrl, outgoingBody) {
 }
 
 outgoingWebhooks.reset = function () {
+  logger.debug(`resetting outgoing-webhooks`)
   outgoingWebhooks.calls.splice(0, outgoingWebhooks.calls.length)
 }

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "pretest": "standard index.js mocker/*.js lib/*.js test/*.js test/**/*.js --fix",
-    "test": "istanbul cover --report lcov --dir ./coverage/ _mocha --recursive ./test/ --grep ./test/**/*.spec.js -- --colors --reporter spec"
+    "test": "istanbul cover --report lcov --dir ./coverage/ _mocha --recursive ./test/ --grep ./test/**/*.spec.js -- --colors --reporter spec",
+    "ci": "npm test && cat ./coverage/lcov.info | coveralls"
   },
   "author": "",
   "license": "MIT",
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "coveralls": "^2.11.15",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "proxyquire": "^1.7.10",

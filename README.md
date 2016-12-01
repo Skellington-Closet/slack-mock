@@ -122,9 +122,10 @@ Returns an immediately resolved Promise for easy chaining.
 - `reset`: `function()` Clears the `rtm.calls` array and closes connections to all connected clients.
 
 - `calls`: `Array` An array of payloads received by the RTM API from your Slack app.
-These are the exact message received with the following additions
-  - `_client` A reference to the websocket client that received the payload.
-  
+  - `message` The message that was received by the RTM API as an Object.
+  - `client` A reference to the websocket client that received the payload.
+  - `rawMessage` The original String message received by the RTM API. Good for troubleshooting.
+
 
 ### `instance.slashCommands` (Slash Commands)
 

@@ -1,5 +1,10 @@
 # slack-mock
-A Slack API mocker for Slack bot integration tests.
+
+[![Build Status](https://travis-ci.org/colestrode/slack-mock.svg?branch=master)](https://travis-ci.org/colestrode/slack-mock) 
+[![Coverage Status](https://coveralls.io/repos/github/colestrode/slack-mock/badge.svg?branch=master)](https://coveralls.io/github/colestrode/slack-mock?branch=master)
+[![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+
+A Slack API mocker for all your Slack bot integration tests.
 
 ## API
 
@@ -94,6 +99,9 @@ This includes both responses to the original Slack interactive button request an
   - `headers` The headers of the intercepted request as an Object
   - `statusCode` The status code of the intercepted request. Only captured for immediate responses, not for using the `response_url`.
   - `type` Either `response` or `response_url`. Indicates how the call was intercepted.
+
+
+---
 
 
 ### `instance.outgoingingWebhooks` (Outgoing Webhooks)

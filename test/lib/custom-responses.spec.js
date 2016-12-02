@@ -18,7 +18,7 @@ describe('custom responses', function () {
       debug: sinon.stub()
     }
 
-    customResponses = proxyquire('../../lib/custom-responses', {
+    customResponses = proxyquire('../../src/lib/custom-responses', {
       './logger': loggerMock
     })
   })

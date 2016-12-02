@@ -23,7 +23,7 @@ describe('utils', function () {
       debug: sinon.stub()
     }
 
-    utils = proxyquire('../../lib/utils', {
+    utils = proxyquire('../../src/lib/utils', {
       './logger': loggerMock,
       'qs': qsMock
     })

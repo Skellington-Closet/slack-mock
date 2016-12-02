@@ -33,7 +33,7 @@ describe('mocker: incoming webhooks', function () {
 
     // I ran into some weird scoping issues by redefining this in a beforeEach
     // moving to a before() fixed them
-    incomingWebhooks = proxyquire('../../mocker/incoming-webhooks', {
+    incomingWebhooks = proxyquire('../../src/mocker/incoming-webhooks', {
       '../lib/logger': loggerMock,
       '../lib/custom-responses': customResponsesMock,
       '../lib/utils': utilsMock

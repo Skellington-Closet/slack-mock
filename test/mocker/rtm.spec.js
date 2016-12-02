@@ -35,7 +35,7 @@ describe('mocker: rtm', function () {
       debug: sinon.stub()
     }
 
-    rtm = proxyquire('../../mocker/rtm', {
+    rtm = proxyquire('../../src/mocker/rtm', {
       'ws': wsMock,
       '../lib/logger': loggerMock
     })

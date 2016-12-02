@@ -39,7 +39,7 @@ describe('mocker: interactive buttons', function () {
 
     requestMock = sinon.stub()
 
-    interactiveButtons = proxyquire('../../mocker/interactive-buttons', {
+    interactiveButtons = proxyquire('../../src/mocker/interactive-buttons', {
       'request': requestMock,
       '../lib/logger': loggerMock,
       '../lib/utils': utilsMock,

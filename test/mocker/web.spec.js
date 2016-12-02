@@ -38,7 +38,7 @@ describe('mocker: web', function () {
       set: sinon.stub()
     }
 
-    web = proxyquire('../../mocker/web', {
+    web = proxyquire('../../src/mocker/web', {
       './rtm': rtmMock,
       '../lib/custom-responses': customResponsesMock,
       '../lib/logger': loggerMock,

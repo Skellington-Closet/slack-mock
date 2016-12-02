@@ -33,7 +33,7 @@ describe('mocker: events', function () {
       debug: sinon.stub()
     }
 
-    events = proxyquire('../../mocker/events', {
+    events = proxyquire('../../src/mocker/events', {
       'request': requestMock,
       '../lib/logger': loggerMock
     })

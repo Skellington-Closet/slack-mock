@@ -27,6 +27,8 @@ Config options are:
 
 The configured instance of the Slack Mock `slackMock.instance` object. This is the same object returned from `slackMock(config)` 
 
+---
+
 
 ### `instance.events` (Events API)
 
@@ -209,3 +211,5 @@ Resets all mocks. A convenience method for calling reset on individual API mocks
 
 ## Examples
 
+See the [examples tests](examples/test) for full examples of mocking both a single-team RTM bot and a full
+Slack App. You can run the examples with `npm run examples`.

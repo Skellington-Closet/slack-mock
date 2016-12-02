@@ -7,13 +7,10 @@ const controller = module.exports
 controller.oauth = function (req, res) {
   res.redirect('https://github.com/colestrode/skellington')
 
-  console.log('oauth')
   api.oauth.access(req.query.code, (err, token) => {
     if (err) {
       return console.log(err)
     }
-
-    console.log('access')
 
     startRtm(token)
   })

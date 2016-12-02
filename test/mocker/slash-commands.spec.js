@@ -39,7 +39,7 @@ describe('mocker: slash commands', function () {
 
     requestMock = sinon.stub()
 
-    slashCommands = proxyquire('../../mocker/slash-commands', {
+    slashCommands = proxyquire('../../src/mocker/slash-commands', {
       'request': requestMock,
       '../lib/logger': loggerMock,
       '../lib/utils': utilsMock,

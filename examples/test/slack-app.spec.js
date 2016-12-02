@@ -17,7 +17,7 @@ describe('slack-app', function () {
     require('../slack-app')
   })
 
-  it('should start an rtm connection', function (done) {
+  it('should start an rtm connection after the oauth flow', function (done) {
     slackMock.web.addResponse({
       url: 'https://slack.com/api/oauth.access',
       status: 200,
@@ -27,11 +27,6 @@ describe('slack-app', function () {
         scope: 'incoming-webhook,commands,bot',
         team_name: 'Team Installing Your Hook',
         team_id: 'XXXXXXXXXX',
-        incoming_webhook: {
-          url: 'https://hooks.slack.com/TXXXXX/BXXXXX/XXXXXXXXXX',
-          channel: '#channel-it-will-post-to',
-          configuration_url: 'https://teamname.slack.com/services/BXXXXX'
-        },
         bot: {
           bot_user_id: 'UTTTTTTTTTTR',
           bot_access_token: 'xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT'
@@ -153,7 +148,7 @@ describe('slack-app', function () {
       })
   })
 
-  it('should reply to a slash command', function () {
+  it('should reply to an interactive button message', function () {
     const command = {
       token: 'IkuvaNzQIHg97ATvDxqgjtO',
       team_id: 'T0001',

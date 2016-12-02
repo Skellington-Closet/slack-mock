@@ -72,7 +72,7 @@ describe('slack-mock', function () {
       calls: []
     }
 
-    mocker = proxyquire('../index', {
+    mocker = proxyquire('../src/index', {
       './mocker/events': eventsMock,
       './mocker/incoming-webhooks': incomingWebhooksMock,
       './mocker/interactive-buttons': interactiveButtonsMock,

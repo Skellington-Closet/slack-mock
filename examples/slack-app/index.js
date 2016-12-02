@@ -20,7 +20,7 @@ app.post('/button', formParser, controller.button)
 
 // need to use something like localtunnel to expose this server to the Internet
 app.listen(9000, () => {
-  console.log('server listening on 9000')
+  console.log('slack app listening on 9000')
 
   // post to an incoming webhook once we're online
   require('request')({

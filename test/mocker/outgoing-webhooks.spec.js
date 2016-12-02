@@ -26,7 +26,7 @@ describe('mocker: outgoing webhooks', function () {
 
     requestMock = sinon.stub()
 
-    outgoingWebhooks = proxyquire('../../mocker/outgoing-webhooks', {
+    outgoingWebhooks = proxyquire('../../src/mocker/outgoing-webhooks', {
       'request': requestMock,
       '../lib/logger': loggerMock
     })

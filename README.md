@@ -212,4 +212,4 @@ Resets all mocks. A convenience method for calling reset on individual API mocks
 ## Examples
 
 See the [examples tests](examples/test) for full examples of mocking both a single-team RTM bot and a full
-Slack App.
+Slack App. You can run the examples with `npm run examples`.

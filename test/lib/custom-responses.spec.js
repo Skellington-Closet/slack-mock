@@ -45,6 +45,39 @@ describe('custom responses', function () {
       expect(customResponses.get('web', 'set.walter.white')).to.deep.equal([400, 'body', 'headers'])
     })
 
+    it('should set url of any if no url is passed', function () {
+      const opts = {
+        statusCode: 400,
+        body: 'body',
+        headers: 'headers'
+      }
+
+      customResponses.set('web', opts)
+
+      expect(customResponses.get('web', 'set.walter.white')).to.deep.equal([400, 'body', 'headers'])
+    })
+
+    it('should use specific url over any', function () {
+      it('should set url of any if no url is passed', function () {
+        const opts = {
+          statusCode: 401,
+          body: 'body',
+          headers: 'headers'
+        }
+        customResponses.set('web', opts)
+
+        const opts2 = {
+          url: 'set.walter.white',
+          statusCode: 402,
+          body: 'body',
+          headers: 'headers'
+        }
+        customResponses.set('web', opts2)
+
+        expect(customResponses.get('web', 'set.walter.white')).to.deep.equal([402, 'body', 'headers'])
+      })
+    })
+
     it('should default status code and headers', function () {
       const opts = {
         url: 'set.walter.white',

@@ -55,7 +55,7 @@ The `incomingWebhooks` object mocks sending payloads from you Slack App to all I
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
 receiving a post to a registered endpoint. This method can be called multiple times. Responses
 will be used in a FIFO order. Options are: 
-  - `url` (String, required) The Incoming Webhook URL your app will be POSTing to.
+  - `url` (String, optional) The Incoming Webhook URL your app will be POSTing to.
   - `statusCode` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
   - `body` (Object, optional) The response body to reply with. Defaults to `{ok: true}`
   - `headers` (Object, optional) The HTTP headers to reply with. Defaults to `{}`
@@ -83,7 +83,7 @@ The body will include a `response_url` parameter. Returns an immediately resolve
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
 receiving a post to a registered endpoint. This method can be called multiple times. Responses
 will be used in a FIFO order. Options are: 
-  - `url` (String, required) The Incoming Webhook URL your app will be POSTing to.
+  - `url` (String, optional) The Incoming Webhook URL your app will be POSTing to.
   - `statusCode` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
   - `body` (Object, optional) The response body to reply with. Defaults to `{ok: true}`
   - `headers` (Object, optional) The HTTP headers to reply with. Defaults to `{}`
@@ -156,7 +156,7 @@ The body will include a `response_url` parameter Returns an immediately resolved
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
 receiving a post to a registered endpoint. This method can be called multiple times. Responses
 will be used in a FIFO order. Options are: 
-  - `url` (String, required) The Incoming Webhook URL your app will be POSTing to.
+  - `url` (String, optional) The Incoming Webhook URL your app will be POSTing to.
   - `statusCode` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
   - `body` (Object, optional) The response body to reply with. Defaults to `{ok: true}`
   - `headers` (Object, optional) The HTTP headers to reply with. Defaults to `{}`
@@ -185,7 +185,7 @@ It supports both GET and POST requests to all endpoints.
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
 receiving a request to a Web API endpoint. Endpoints without a custom response will return 200 `{ok: true}`.
 This method can be called multiple times per endpoint. Responses will be used in a FIFO order. Options are: 
-  - `url` (String, required) Web API URL your app will be POSTing to.
+  - `url` (String, optional) Web API URL your app will be POSTing to.
   - `status` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
   - `body` (Object, optional) The response body to reply with. Defaults to `{ok: true}`
   - `headers` (Object, optional) The HTTP headers to reply with. Defaults to `{}`

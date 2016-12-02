@@ -26,14 +26,14 @@ interactiveButtons.send = function (target, data) {
     form: data
   }, (err, res, body) => {
     if (err) {
-      return logger.error(`error receiving response to interactive button ${target}`, err)
+      return logger.error(`error receiving response to interactive-buttons ${target}`, err)
     }
 
     if (typeof body === 'string') {
       try {
         body = JSON.parse(body) // TODO necessary?
       } catch (e) {
-        logger.error('could not parse interactive response as json', e)
+        logger.error('could not parse interactive-buttons response as json', e)
       }
     }
 
@@ -41,7 +41,7 @@ interactiveButtons.send = function (target, data) {
 
     interactiveButtons.calls.push({
       url: target,
-      body: body,
+      params: body,
       headers: res.headers,
       statusCode: res.statusCode,
       type: 'response'

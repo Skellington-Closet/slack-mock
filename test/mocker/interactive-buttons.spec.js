@@ -83,10 +83,10 @@ describe('mocker: interactive buttons', function () {
           expect(interactiveButtons.calls).to.have.length(1)
 
           const firstCall = interactiveButtons.calls[0]
-          expect(firstCall).to.have.keys(['url', 'body', 'headers', 'statusCode', 'type'])
+          expect(firstCall).to.have.keys(['url', 'params', 'headers', 'statusCode', 'type'])
 
           expect(firstCall.url).to.equal(target)
-          expect(firstCall.body).to.equal(bodyMock)
+          expect(firstCall.params).to.equal(bodyMock)
           expect(firstCall.headers).to.equal(headersMock)
           expect(firstCall.statusCode).to.equal(resMock.statusCode)
           expect(firstCall.type).to.equal('response')

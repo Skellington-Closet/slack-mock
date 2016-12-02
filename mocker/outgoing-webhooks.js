@@ -9,6 +9,7 @@ outgoingWebhooks.calls = []
 outgoingWebhooks.send = function (targetUrl, outgoingBody) {
   request({
     method: 'POST',
+    uri: targetUrl,
     json: true,
     body: outgoingBody
   }, (err, res, body) => {
@@ -20,7 +21,7 @@ outgoingWebhooks.send = function (targetUrl, outgoingBody) {
 
     outgoingWebhooks.calls.push({
       url: targetUrl,
-      body: body,
+      params: body,
       headers: res.headers,
       statusCode: res.statusCode
     })

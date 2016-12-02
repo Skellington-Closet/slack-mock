@@ -60,10 +60,10 @@ describe('mocker: outgoing webhooks', function () {
           expect(outgoingWebhooks.calls).to.have.length(1)
 
           const firstCall = outgoingWebhooks.calls[0]
-          expect(firstCall).to.have.keys(['url', 'body', 'headers', 'statusCode'])
+          expect(firstCall).to.have.keys(['url', 'params', 'headers', 'statusCode'])
 
           expect(firstCall.url).to.equal(target)
-          expect(firstCall.body).to.equal(bodyMock)
+          expect(firstCall.params).to.equal(bodyMock)
           expect(firstCall.headers).to.equal(headersMock)
           expect(firstCall.statusCode).to.equal(resMock.statusCode)
         })

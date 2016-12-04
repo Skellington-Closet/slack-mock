@@ -29,14 +29,150 @@ Functional test by their nature are asynchronous: you are inspecting from the ou
 
 That's why Slack Mock provides simple, synchronous methods to queue, trigger, and inspect messages to and from Slack. No magic included.
 
-To write a Slack Mock integration test queue up responses from Slack to your bot, then use Slack Mock to send a message from Slack to your bot to trigger a bot action, wait some time, then assert that your bot made the correct calls to Slack in order. How long do you wait? It depends on what your bot is doing. Play around a little and see what works. I find a 25 millisecond wait is enough for simple flows. 
+To write a Slack Mock integration test queue up responses from Slack to your bot, then use Slack Mock to send a message from Slack to your bot to trigger a bot action, wait some time, then assert that your bot made the correct calls to Slack in order. How long do you wait? It depends on what your bot is doing. Play around a little and see what works. I find a 50 millisecond wait is enough for simple flows. 
 
 ## Usage
 
 See the [examples tests](examples/test) for full examples of mocking both a single-team RTM bot and a full
 Slack App. You can run the examples with `npm run examples`.
 
-TODO inclue samples here
+### Events API
+
+```js
+const payload = {...}
+
+return slackMock.events.send('http://localhost:9000/event', payload)
+  .then(delay(50))
+  .then(() => {
+    expect(slackMock.events.calls).to.have.length(1)
+    const firstCall = slackMock.events.calls[0]
+    expect(firstCall.statusCode).to.equal(200)
+  })
+```
+
+### Incoming Webhooks
+
+```js
+// incoming webhooks
+const firstCall = slackMock.incomingWebhooks.calls[0]
+expect(firstCall.params.text).to.equal('hello world')
+```
+
+### Interactive Buttons
+
+```js
+const payload = {...}
+
+slackMock.interactiveButtons.addResponse({statusCode: 201})
+
+return slackMock.interactiveButtons.send('http://localhost:9000/button', payload)
+  .then(delay(75))
+  .then(() => {
+    expect(slackMock.interactiveButtons.calls).to.have.length(2)
+    const responseUrlCall = _.find(slackMock.interactiveButtons.calls, {type: 'response_url'})
+    expect(responseUrlCall.params.text).to.equal('GO CUBS')
+  })
+```
+
+### Outgoing Webhooks
+
+```js
+const payload = {...}
+
+return slackMock.outgoingWebhooks.send('http://localhost:9000/outgoing', payload)
+  .then(delay(50))
+  .then(() => {
+    expect(slackMock.outgoingWebhooks.calls).to.have.length(1)
+    const firstCall = slackMock.outgoingWebhooks.calls[0]
+    expect(firstCall.params.text).to.equal('GO CUBS')
+  })
+```
+
+### RTM
+
+```js
+return slackMock.rtm.send({type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'}, slackMock.rtm.clients[slackMock.rtm.clients.length - 1])
+      .then(delay(50))
+      .then(() => {
+        expect(slackMock.rtm.calls).to.have.length(1)
+        expect(slackMock.rtm.calls[0].message.text).to.equal('GO CUBS')
+      })
+```
+
+### Slash Commands
+
+```js
+const payload = {...}
+
+return slackMock.slashCommands.send('http://localhost:9000/slash', payload)
+  .then(delay(75))
+  .then(() => {
+    expect(slackMock.slashCommands.calls).to.have.length(2)
+
+    const responseUrlCall = _.find(slackMock.slashCommands.calls, {type: 'response_url'})
+    expect(responseUrlCall.params.text).to.equal('GO CUBS')
+    expect(responseUrlCall.params.response_type).to.equal('ephemeral')
+  })
+```
+
+
+### OAuth (Web + RTM API)
+
+```js
+slackMock.web.addResponse({
+  url: 'https://slack.com/api/oauth.access',
+  status: 200,
+  body: {
+    access_token: 'xoxp-XXXXXXXX-XXXXXXXX-XXXXX',
+    scope: 'incoming-webhook,commands,bot',
+    team_name: 'mockTeam',
+    team_id: 'Tmock',
+    bot: {
+      bot_user_id: 'Bmock',
+      bot_access_token: 'xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT'
+    }
+  }
+})
+
+slackMock.web.addResponse({
+  url: 'https://slack.com/api/rtm.start',
+  status: 200,
+  body: {
+    ok: true,
+    self: {
+      name: 'mockSelf',
+      id: 'Bmock'
+    },
+    team: {
+      name: 'mockTeam',
+      id: 'Tmock'
+    }
+  }
+})
+
+request({
+  method: 'POST',
+  uri: 'http://localhost:9000/oauth',
+  qs: {
+    code: 'abc123'
+  }
+}, (err) => {
+  if (err) {
+    return console.log(err)
+  }
+
+  return delay(250) // wait for oauth flow to complete, rtm to be established
+    .then(() => {
+      return slackMock.rtm.send({type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'}, slackMock.rtm.clients[slackMock.rtm.clients.length - 1])
+    })
+    .then(delay(20))
+    .then(() => {
+      expect(slackMock.rtm.calls).to.have.length(1)
+      expect(slackMock.rtm.calls[0].message.text).to.equal('GO CUBS')
+    })
+    .then(() => done(), (e) => done(e))
+})
+```
 
 
 ## API Conventions

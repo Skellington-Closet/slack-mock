@@ -92,11 +92,11 @@ return slackMock.outgoingWebhooks.send('http://localhost:9000/outgoing', payload
 
 ```js
 return slackMock.rtm.send({type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'}, slackMock.rtm.clients[slackMock.rtm.clients.length - 1])
-      .then(delay(50))
-      .then(() => {
-        expect(slackMock.rtm.calls).to.have.length(1)
-        expect(slackMock.rtm.calls[0].message.text).to.equal('GO CUBS')
-      })
+  .then(delay(50))
+  .then(() => {
+    expect(slackMock.rtm.calls).to.have.length(1)
+    expect(slackMock.rtm.calls[0].message.text).to.equal('GO CUBS')
+  })
 ```
 
 ### Slash Commands

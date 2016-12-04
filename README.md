@@ -6,6 +6,34 @@
 
 A Slack API mocker for all your Slack bot integration tests.
 
+## Mock All Slack APIs
+
+Slack-mock will mock all seven (yes, seven!) ways of pushing data into and pulling data from Slack. 
+
+## No Magic Included
+
+OK, there's a little magic included in capturing HTTP requests, but that's it. No timeouts, magic promises, or events. Functional tests are hard, trying to make them easy with "convenience" that is out of your control only makes them harder.
+
+## Examples
+
+See the [examples tests](examples/test) for full examples of mocking both a single-team RTM bot and a full
+Slack App. You can run the examples with `npm run examples`.
+
+TODO inclue samples here
+
+
+## API Notes
+
+Slack Mock will intercept all requests to `https://slack.com` and `https://hooks.slack.com`. There's no need to change any URLs in your bot.
+
+General notes on API methods:
+- `send` will always send *from* Slack *to* your bot/app
+- `calls` will be in order received and always contain params, headers, and url. Params are a mix of url params and body.
+- `reset` will always clear calls and any queued responses you have.
+- `addResponse` will add the next response returned. You can call mutlitple times to queue responses. If you set a `url` option, then the response will only be returned for that url. URL specific responses take precedence over unspecified responses
+
+Slack mock will respond to all requests with a 200 OK unless a custom response has been queued. For web requests, a the default body will be `{ok: true}`.
+
 ## API
 
 ### `slackMock`: `function(config)`
@@ -209,7 +237,3 @@ Each call will contain
 Resets all mocks. A convenience method for calling reset on individual API mocks.
 
 
-## Examples
-
-See the [examples tests](examples/test) for full examples of mocking both a single-team RTM bot and a full
-Slack App. You can run the examples with `npm run examples`.

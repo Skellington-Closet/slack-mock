@@ -186,7 +186,10 @@ It supports both GET and POST requests to all endpoints.
 
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
 receiving a request to a Web API endpoint. Endpoints without a custom response will return 200 `{ok: true}`.
-This method can be called multiple times per endpoint. Responses will be used in a FIFO order. Options are: 
+A `url` parameter will be added to all responses from the `https://slack.com/api/rtm.start` method if the body
+contains `ok: true`. 
+
+  This method can be called multiple times per endpoint. Responses will be used in a FIFO order. Options are: 
   - `url` (String, optional) Web API URL your app will be POSTing to.
   - `status` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
   - `body` (Object, optional) The response body to reply with. Defaults to `{ok: true}`

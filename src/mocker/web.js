@@ -31,19 +31,21 @@ web.addResponse = function (opts) {
 
 function reply (path, requestBody) {
   const url = `https://slack.com${path.split('?')[0]}`
+  const params = utils.parseParams(path, requestBody)
 
   logger.debug(`intercepted web request: ${url}`)
 
   web.calls.push({
     url: url,
-    params: utils.parseParams(path, requestBody),
+    params: params,
     headers: this.req.headers
   })
 
   const response = customResponses.get('web', url)
   const body = response[1]
   if (/rtm\.start/.test(url) && body.ok) {
-    body.url = rtm._.url
+    const rtmUrl = rtm._.addToken(params.token)
+    body.url = rtmUrl
   }
 
   return response

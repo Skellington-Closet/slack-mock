@@ -7,10 +7,11 @@ describe('single team bot', function () {
   let slackMock
 
   before(function () {
-    // wait for bot to get bootstrapped
-    this.timeout(30000)
-
     slackMock = require('../../index').instance
+  })
+
+  beforeEach(function () {
+    slackMock.reset()
 
     slackMock.web.addResponse({
       url: 'https://slack.com/api/rtm.start',
@@ -29,10 +30,6 @@ describe('single team bot', function () {
     require('../single-team-bot')
 
     return delay(100) // wait for bot to bootstrap and connect to rtm
-  })
-
-  beforeEach(function () {
-    slackMock.web.reset()
   })
 
   it('should respond to hello with GO CUBS', function () {

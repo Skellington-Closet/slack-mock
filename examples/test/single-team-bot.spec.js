@@ -5,6 +5,7 @@ const delay = require('delay')
 
 describe('single team bot', function () {
   let slackMock
+  const token = process.env.SLACK_TOKEN
 
   before(function () {
     slackMock = require('../../index').instance
@@ -33,11 +34,32 @@ describe('single team bot', function () {
   })
 
   it('should respond to hello with GO CUBS', function () {
-    return slackMock.rtm.send({type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'}, slackMock.rtm.clients[slackMock.rtm.clients.length - 1])
+    return slackMock.rtm.send({
+      token: token,
+      type: 'message',
+      channel: 'mockChannel',
+      user: 'usr',
+      text: 'hello'
+    })
       .then(delay(50))
       .then(() => {
         expect(slackMock.rtm.calls).to.have.length(1)
         expect(slackMock.rtm.calls[0].message.text).to.equal('GO CUBS')
+      })
+  })
+
+  it('should respond to howdy with GO TRIBE', function () {
+    return slackMock.rtm.send({
+      token: token,
+      type: 'message',
+      channel: 'mockChannel',
+      user: 'usr',
+      text: 'howdy'
+    })
+      .then(delay(50))
+      .then(() => {
+        expect(slackMock.rtm.calls).to.have.length(1)
+        expect(slackMock.rtm.calls[0].message.text).to.equal('GO TRIBE')
       })
   })
 })

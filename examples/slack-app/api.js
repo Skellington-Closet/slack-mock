@@ -48,6 +48,8 @@ function apiRequest (token, method, data, cb) {
     data.token = token
   }
 
+  console.log(method, token);
+
   request({
     method: 'GET',
     uri: `https://slack.com/api/${method}`,

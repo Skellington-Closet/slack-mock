@@ -3,7 +3,10 @@
 const rtm = module.exports
 const WebSocketServer = require('ws').Server
 const logger = require('../lib/logger')
-let wss
+const expressApp = require('express')()
+const wssServers = new Map()
+let baseUrl
+let server
 
 rtm.clients = []
 rtm.calls = []
@@ -11,8 +14,35 @@ rtm.calls = []
 rtm._ = {} // for internal state that won't be exposed
 
 rtm._.init = function (config) {
-  rtm._.url = `ws://localhost:${config.rtmPort}`
-  setUpWebsocketServer(config.rtmPort)
+  const port = config.rtmPort
+
+  server = expressApp.listen(port, () => {
+    logger.info(`started RTM server on port ${port}`)
+  })
+
+  baseUrl = `ws://localhost:${port}/`
+}
+
+rtm._.addToken = function(token) {
+  if(!wssServers.get(token)) {
+    const wss = new WebSocketServer({
+      server: server,
+      path: `/${token}`,
+      clientTracking: true
+    })
+
+    wssServers.set(token, wss)
+
+    wss.on('connection', (client) => {
+      client.on('message', (message) => {
+        recordMessage(client, message)
+      })
+
+      logger.info(`client ${token} connected to RTM API`)
+    })
+  }
+
+  return `${baseUrl}${token}`
 }
 
 rtm.reset = function () {
@@ -20,18 +50,29 @@ rtm.reset = function () {
 
   // in place reset
   rtm.calls.splice(0, rtm.calls.length)
-  rtm.clients.forEach((client) => client.close())
-  rtm.clients.splice(0, rtm.clients.length)
+  return stopAllServers()
 }
 
-rtm.broadcast = function (message) {
-  return Promise.all(rtm.clients.map((client) => {
-    return rtm.send(message, client)
-      .catch(() => {}) // don't fail
-  }))
+rtm.send = function (message) {
+  return new Promise((resolve, reject) => {
+    const token = message.token
+
+    if (!token) {
+      return reject(new Error('token is a required parameter of message'))
+    }
+
+    const wss = wssServers.get(token)
+
+    if (!wss) {
+      return reject(new Error(`client with token ${token} has never connected to the RTM API`))
+    }
+
+    sendToClient(message, wss.clients[0]).then(resolve, reject)
+  })
 }
 
-rtm.send = function (message, client) {
+// sends the given message to the given client
+function sendToClient(message, client) {
   return new Promise((resolve, reject) => {
     try {
       client.send(JSON.stringify(message), (e) => {
@@ -44,24 +85,42 @@ rtm.send = function (message, client) {
       logger.error(`could not send rtm message to client`, e)
       return reject(e)
     }
+
     resolve()
   })
 }
 
-function setUpWebsocketServer (port) {
-  wss = new WebSocketServer({ port: port })
+rtm.stopServer = function(token) {
+  return new Promise((resolve, reject) => {
+    const wss = wssServers.get('token')
+    if (!wss) {
+      return resolve()
+    }
 
-  logger.info(`starting RTM server on port ${port}`)
+    wss.close((err) => {
+      if (err) {
+        logger.debug(`there was an error closing server ${token}`, err)
+        return reject(err)
+      }
 
-  wss.on('connection', (client) => {
-    rtm.clients.push(client)
-
-    client.on('message', (message) => {
-      recordMessage(client, message)
+      logger.debug(`server ${token} closed`)
+      resolve()
     })
-
-    logger.info(`client connected to RTM API`)
   })
+}
+
+function stopAllServers() {
+  const promises = []
+
+  for (let token of wssServers.keys()) {
+    promises.push(rtm.stopServer(token))
+  }
+
+  return Promise.all(promises)
+}
+
+rtm.startServer = function(token) {
+  rtm._.addToken(token)
 }
 
 function recordMessage (client, message) {

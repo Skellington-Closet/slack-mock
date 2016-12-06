@@ -23,8 +23,8 @@ rtm._.init = function (config) {
   baseUrl = `ws://localhost:${port}/`
 }
 
-rtm._.addToken = function(token) {
-  if(!wssServers.get(token)) {
+rtm._.addToken = function (token) {
+  if (!wssServers.get(token)) {
     const wss = new WebSocketServer({
       server: server,
       path: `/${token}`,
@@ -50,7 +50,6 @@ rtm.reset = function () {
 
   // in place reset
   rtm.calls.splice(0, rtm.calls.length)
-  return stopAllServers()
 }
 
 rtm.send = function (message) {
@@ -72,7 +71,7 @@ rtm.send = function (message) {
 }
 
 // sends the given message to the given client
-function sendToClient(message, client) {
+function sendToClient (message, client) {
   return new Promise((resolve, reject) => {
     try {
       client.send(JSON.stringify(message), (e) => {
@@ -90,9 +89,9 @@ function sendToClient(message, client) {
   })
 }
 
-rtm.stopServer = function(token) {
+rtm.stopServer = function (token) {
   return new Promise((resolve, reject) => {
-    const wss = wssServers.get('token')
+    const wss = wssServers.get(token)
     if (!wss) {
       return resolve()
     }
@@ -104,22 +103,13 @@ rtm.stopServer = function(token) {
       }
 
       logger.debug(`server ${token} closed`)
+      wssServers.delete(token)
       resolve()
     })
   })
 }
 
-function stopAllServers() {
-  const promises = []
-
-  for (let token of wssServers.keys()) {
-    promises.push(rtm.stopServer(token))
-  }
-
-  return Promise.all(promises)
-}
-
-rtm.startServer = function(token) {
+rtm.startServer = function (token) {
   rtm._.addToken(token)
 }
 
@@ -140,7 +130,7 @@ function recordMessage (client, message) {
 
   rtm.calls.push({
     rawMessage: message,
-    client: client,
+    token: parsedMessage ? parsedMessage.token : null,
     message: parsedMessage
   })
 }

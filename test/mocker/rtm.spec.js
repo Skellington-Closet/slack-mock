@@ -12,22 +12,34 @@ describe('mocker: rtm', function () {
   let wsMock
   let wsServerMock
   let wsClientMock
+  let expressMock
+  let expressAppMock
+  let serverMock
   let loggerMock
 
   before(function () {
     wsClientMock = {
-      close: sinon.stub(),
-      send: sinon.stub().yields(),
+      send: sinon.stub(),
       on: sinon.stub()
     }
 
     wsServerMock = {
-      on: sinon.stub()
+      on: sinon.stub(),
+      close: sinon.stub(),
+      clients: [wsClientMock]
     }
 
     wsMock = {
-      Server: sinon.stub().returns(wsServerMock)
+      Server: sinon.stub()
     }
+
+    serverMock = 'server'
+
+    expressAppMock = {
+      listen: sinon.stub().returns(serverMock)
+    }
+
+    expressMock = sinon.stub().returns(expressAppMock)
 
     loggerMock = {
       error: sinon.stub(),
@@ -37,72 +49,100 @@ describe('mocker: rtm', function () {
 
     rtm = proxyquire('../../src/mocker/rtm', {
       'ws': wsMock,
+      'express': expressMock,
       '../lib/logger': loggerMock
     })
   })
 
   beforeEach(function () {
+    rtm.reset()
+
     loggerMock.error.reset()
     loggerMock.info.reset()
     loggerMock.debug.reset()
 
-    rtm.reset()
+    wsClientMock.send.reset()
+    wsClientMock.on.reset()
+    wsClientMock.send.yields()
+
+    wsServerMock.on.reset()
+    wsServerMock.close.reset()
+    wsServerMock.close.yields()
+
+    wsMock.Server.reset()
+    wsMock.Server.returns(wsServerMock)
+
+    expressAppMock.listen.reset()
+    expressAppMock.listen.yields()
+    expressAppMock.listen.returns(serverMock)
+
+    expressMock.reset()
+    expressMock.returns(expressAppMock)
   })
 
   describe('init', function () {
-    it('should set the rtm url', function () {
+    it('should start the express server', function () {
       rtm._.init({rtmPort: 9000})
-      expect(rtm._.url).to.equal('ws://localhost:9000')
-    })
-
-    it('should start the websocket server', function () {
-      rtm._.init({rtmPort: 9000})
-      expect(wsMock.Server).to.have.been.calledWith({port: 9000})
-
-      expect(wsServerMock.on).to.have.been.calledWith('connection')
+      expect(expressAppMock.listen).to.have.been.calledWith(9000)
     })
   })
 
-  describe('websocket', function () {
+  describe('addToken', function () {
+    let token
+
     beforeEach(function () {
-      rtm._.init({rtmPort: 9000})
+      token = 'abc123'
+      // create server
+      rtm._.init({rtmPort: 9001})
     })
 
-    describe('server connection', function () {
-      it('should add client to clients array', function () {
-        const connectionCb = wsServerMock.on.args[0][1]
-        connectionCb(wsClientMock)
+    afterEach(function () {
+      rtm.stopServer('abc123')
+    })
 
-        expect(rtm.clients).to.have.length(1)
-        expect(rtm.clients[0]).to.equal(wsClientMock)
+    it('should start the websocket client once', function () {
+      const rtmUrl1 = rtm._.addToken(token)
+      const rtmUrl2 = rtm._.addToken(token)
+
+      expect(wsMock.Server).to.have.been.calledOnce
+      expect(rtmUrl1).to.equal(rtmUrl2)
+      expect(rtmUrl1).to.equal('ws://localhost:9001/abc123')
+
+      expect(wsMock.Server).to.have.been.calledWith({
+        server: serverMock,
+        path: `/${token}`,
+        clientTracking: true
       })
+    })
 
-      it('should register a message listener on the client', function () {
-        const connectionCb = wsServerMock.on.args[0][1]
-        connectionCb(wsClientMock)
+    it('should register a message listener on the client', function () {
+      rtm._.addToken(token)
 
-        expect(wsClientMock.on).to.have.been.calledWith('message')
-      })
+      const connectionCb = wsServerMock.on.args[0][1]
+      connectionCb(wsClientMock)
+
+      expect(wsClientMock.on).to.have.been.calledWith('message')
     })
 
     describe('message recording', function () {
       let messageCb
 
       beforeEach(function () {
+        rtm._.addToken(token)
         const connectionCb = wsServerMock.on.args[0][1]
         connectionCb(wsClientMock)
         messageCb = wsClientMock.on.args[0][1]
       })
 
       it('should record a message to the client', function () {
-        const message = JSON.stringify({hello: 'world'})
+        const message = JSON.stringify({hello: 'world', token: token})
         messageCb(message)
 
         expect(rtm.calls).to.have.length(1)
-        expect(rtm.calls[0]).to.have.keys(['rawMessage', 'client', 'message'])
+        expect(rtm.calls[0]).to.have.keys(['rawMessage', 'message', 'token'])
         expect(rtm.calls[0].message.hello).to.equal('world')
+        expect(rtm.calls[0].token).to.equal(token)
         expect(rtm.calls[0].rawMessage).to.equal(message)
-        expect(rtm.calls[0].client).to.equal(wsClientMock)
       })
 
       it('should record a message even if it is unparseable', function () {
@@ -111,21 +151,45 @@ describe('mocker: rtm', function () {
 
         expect(rtm.calls).to.have.length(1)
         expect(rtm.calls[0].message).to.equal(null)
+        expect(rtm.calls[0].token).to.equal(null)
         expect(rtm.calls[0].rawMessage).to.equal('{hello:')
-        expect(rtm.calls[0].client).to.equal(wsClientMock)
       })
     })
   })
 
   describe('send', function () {
-    beforeEach(function () {
+    let token
 
+    beforeEach(function () {
+      token = 'crystalbluepersuation'
+      rtm._.init({rtmPort: 9001}) // create server
+      rtm._.addToken(token) // create server
     })
 
     it('should send a message', function () {
-      return rtm.send({walter: 'white'}, wsClientMock)
+      return rtm.send({walter: 'white', token: token})
         .then(() => {
-          expect(wsClientMock.send).to.have.been.calledWith('{"walter":"white"}')
+          expect(wsClientMock.send).to.have.been.calledWith(`{"walter":"white","token":"${token}"}`)
+        })
+    })
+
+    it('should reject if token is missing', function () {
+      return rtm.send({walter: 'white'})
+        .then(() => {
+          throw new Error('expected promise to fail.')
+        })
+        .catch((e) => {
+          expect(e.message).to.match(/token is a required/)
+        })
+    })
+
+    it('should reject if there is no server for a token', function () {
+      return rtm.send({walter: 'white', token: 'capncook'})
+        .then(() => {
+          throw new Error('expected promise to fail.')
+        })
+        .catch((e) => {
+          expect(e.message).to.match(/client with token/)
         })
     })
 
@@ -135,7 +199,7 @@ describe('mocker: rtm', function () {
       sinon.stub(JSON, 'stringify')
       JSON.stringify.throws(parseError)
 
-      return rtm.send({walter: 'white'}, wsClientMock)
+      return rtm.send({walter: 'white', token: token})
         .then(() => {
           throw new Error('expected promise to fail.')
         })
@@ -153,48 +217,12 @@ describe('mocker: rtm', function () {
       const sendError = new Error('could not send')
       wsClientMock.send.yields(sendError)
 
-      return rtm.send({walter: 'white'}, wsClientMock)
+      return rtm.send({walter: 'white', token: token})
         .then(() => {
           throw new Error('expected promise to fail.')
         })
         .catch((e) => {
           expect(e).to.equal(sendError)
-        })
-    })
-  })
-
-  describe('broadcast', function () {
-    let client1
-    let client2
-
-    beforeEach(function () {
-      client1 = {close: sinon.stub()}
-      client2 = {close: sinon.stub()}
-
-      rtm.clients.push(client1)
-      rtm.clients.push(client2)
-    })
-
-    it('should call send for all clients', function () {
-      rtm.send = sinon.stub().returns(Promise.resolve())
-
-      return rtm.broadcast('message')
-        .then(() => {
-          expect(rtm.send).to.have.been.calledTwice
-          expect(rtm.send.args[0]).to.deep.equal(['message', client1])
-          expect(rtm.send.args[1]).to.deep.equal(['message', client2])
-        })
-    })
-
-    it('should send to all clients even if one fails', function () {
-      const err = new Error('DING DING')
-      rtm.send = sinon.stub()
-      rtm.send.onCall(0).returns(Promise.reject(err))
-      rtm.send.onCall(1).returns(Promise.resolve())
-
-      return rtm.broadcast('message')
-        .then(() => {
-          expect(rtm.send).to.have.been.calledTwice
         })
     })
   })
@@ -205,12 +233,70 @@ describe('mocker: rtm', function () {
       rtm.reset()
       expect(rtm.calls).to.have.length(0)
     })
+  })
 
-    it('should close clients and clear clients array', function () {
-      rtm.clients.push(wsClientMock)
-      rtm.reset()
-      expect(rtm.clients).to.have.length(0)
-      expect(wsClientMock.close).to.have.been.called
+  describe('startServer', function () {
+    beforeEach(function () {
+      sinon.stub(rtm._, 'addToken')
+    })
+
+    afterEach(function () {
+      rtm._.addToken.restore()
+    })
+
+    it('should call addToken', function () {
+      rtm.startServer('abc123')
+      expect(rtm._.addToken).to.have.been.calledWith('abc123')
+    })
+  })
+
+  describe('stopServer', function () {
+    let token
+
+    beforeEach(function () {
+      token = 'heisenberg'
+      rtm.startServer(token)
+      wsServerMock.close.reset()
+      wsServerMock.close.yields()
+    })
+
+    it('should stop the server if it exists', function () {
+      return rtm.stopServer(token)
+        .then(() => {
+          expect(wsServerMock.close).to.have.been.called
+        })
+    })
+
+    it('should re-create a server after server is stopped', function () {
+      return rtm.stopServer(token)
+        .then(() => {
+          wsMock.Server.reset()
+          rtm._.addToken('abc123')
+        })
+        .then(() => {
+          expect(wsMock.Server).to.have.been.calledOnce
+        })
+    })
+
+    it('should resolve if server does not exists', function () {
+      return rtm.stopServer('notreal')
+        .then(() => {
+          expect(wsServerMock.close).not.to.have.been.called
+        })
+    })
+
+    it('should reject if there is an error closing the server', function () {
+      const err = new Error('GUS FRING')
+      wsServerMock.close.yields(err)
+
+      return rtm.stopServer(token)
+        .then(() => {
+          throw new Error('expected promise to fail.')
+        })
+        .catch((e) => {
+          expect(wsServerMock.close).to.have.been.called
+          expect(e).to.equal(err)
+        })
     })
   })
 })

@@ -28,7 +28,7 @@ describe('mocker: web', function () {
 
     rtmMock = {
       _: {
-        url: 'https://rtm.slack-mock'
+        addToken: sinon.stub()
       }
     }
 
@@ -54,6 +54,9 @@ describe('mocker: web', function () {
     utilsMock.parseParams.reset()
     utilsMock.parseParams.returns({parsed: 'body'})
 
+    rtmMock._.addToken.reset()
+    rtmMock._.addToken.returns('https://rtm.slack-mock')
+
     customResponsesMock.get.reset()
     customResponsesMock.reset.reset()
     customResponsesMock.set.reset()
@@ -71,23 +74,34 @@ describe('mocker: web', function () {
     })
 
     it('should add the rtm url to rtm.start response', function (done) {
+      let token = 'not.real.token'
+
+      utilsMock.parseParams.returns({token: token})
+
       request({
         uri: 'https://slack.com/api/rtm.start',
         method: 'POST',
         json: true,
         body: {
-          team: 'not.real'
+          team: 'not.real',
+          token: 'not.real.token'
         }
       }, afterPost)
 
       function afterPost (err, res, body) {
         if (err) return done(err)
 
-        expect(body).to.deep.equal({
-          ok: true,
-          url: 'https://rtm.slack-mock'
-        })
-        done()
+        try {
+          expect(rtmMock._.addToken).to.have.been.calledWith(token)
+
+          expect(body).to.deep.equal({
+            ok: true,
+            url: 'https://rtm.slack-mock'
+          })
+          done()
+        } catch (e) {
+          done(e)
+        }
       }
     })
   })

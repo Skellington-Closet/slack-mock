@@ -9,11 +9,8 @@ describe('single team bot', function () {
 
   before(function () {
     slackMock = require('../../index').instance
-  })
 
-  beforeEach(function () {
-    slackMock.reset()
-
+    // required for bootstrap
     slackMock.web.addResponse({
       url: 'https://slack.com/api/rtm.start',
       status: 200,
@@ -28,9 +25,20 @@ describe('single team bot', function () {
       }
     })
 
+    // this bot can only be bootstrapped once
     require('../single-team-bot')
 
-    return delay(100) // wait for bot to bootstrap and connect to rtm
+    // wait for RTM flow to complete
+    return delay(50)
+  })
+
+  beforeEach(function () {
+    slackMock.reset()
+  })
+
+  after(function () {
+    // clean up server
+    return slackMock.rtm.stopServer(token)
   })
 
   it('should respond to hello with GO CUBS', function () {

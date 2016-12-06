@@ -18,6 +18,10 @@ describe('slack-app', function () {
     require('../slack-app')
   })
 
+  after(function () {
+    return slackMock.rtm.stopServer(botToken)
+  })
+
   it('should start an rtm connection after the oauth flow', function (done) {
     slackMock.web.addResponse({
       url: 'https://slack.com/api/oauth.access',
@@ -59,7 +63,7 @@ describe('slack-app', function () {
       }
     }, (err) => {
       if (err) {
-        return console.log(err)
+        return done(err)
       }
 
       return delay(250) // wait for oauth flow to complete, rtm to be established

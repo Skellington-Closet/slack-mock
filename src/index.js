@@ -49,11 +49,11 @@ module.exports = function (config) {
       calls: outgoingWebhooks.calls
     },
     rtm: {
-      broadcast: rtm.broadcast,
       send: rtm.send,
       reset: rtm.reset,
       calls: rtm.calls,
-      clients: rtm.clients
+      startServer: rtm.startServer,
+      stopServer: rtm.stopServer
     },
     slashCommands: {
       addResponse: slashCommands.addResponse,

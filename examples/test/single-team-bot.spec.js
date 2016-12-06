@@ -5,13 +5,12 @@ const delay = require('delay')
 
 describe('single team bot', function () {
   let slackMock
+  const token = process.env.SLACK_TOKEN
 
   before(function () {
-    // wait for bot to get bootstrapped
-    this.timeout(30000)
-
     slackMock = require('../../index').instance
 
+    // required for bootstrap
     slackMock.web.addResponse({
       url: 'https://slack.com/api/rtm.start',
       status: 200,
@@ -26,21 +25,49 @@ describe('single team bot', function () {
       }
     })
 
+    // this bot can only be bootstrapped once
     require('../single-team-bot')
 
-    return delay(100) // wait for bot to bootstrap and connect to rtm
+    // wait for RTM flow to complete
+    return delay(50)
   })
 
   beforeEach(function () {
-    slackMock.web.reset()
+    slackMock.reset()
+  })
+
+  after(function () {
+    // clean up server
+    return slackMock.rtm.stopServer(token)
   })
 
   it('should respond to hello with GO CUBS', function () {
-    return slackMock.rtm.send({type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'}, slackMock.rtm.clients[slackMock.rtm.clients.length - 1])
+    return slackMock.rtm.send({
+      token: token,
+      type: 'message',
+      channel: 'mockChannel',
+      user: 'usr',
+      text: 'hello'
+    })
       .then(delay(50))
       .then(() => {
         expect(slackMock.rtm.calls).to.have.length(1)
         expect(slackMock.rtm.calls[0].message.text).to.equal('GO CUBS')
+      })
+  })
+
+  it('should respond to howdy with GO TRIBE', function () {
+    return slackMock.rtm.send({
+      token: token,
+      type: 'message',
+      channel: 'mockChannel',
+      user: 'usr',
+      text: 'howdy'
+    })
+      .then(delay(50))
+      .then(() => {
+        expect(slackMock.rtm.calls).to.have.length(1)
+        expect(slackMock.rtm.calls[0].message.text).to.equal('GO TRIBE')
       })
   })
 })

@@ -189,6 +189,14 @@ There is also a top level `reset` convenience method that will call reset on eac
 
 Slack mock will respond to all requests with a 200 OK unless a custom response has been queued. For web requests, a the default body will be `{ok: true}`.
 
+## RTM Conventions
+
+The RTM mocker creates a websocket server to intercept RTM websocket calls. This means unlike the other API mocks there are some truly asynchronous methods in the RTM mocker: `send` and `stopServer`. Both of these methods return promises that can be resolved or rejected.
+
+An RTM server will automatically be created when you call `https://slack.com/api/rtm.start` and will use the `token` parameter you pass as a unique identifier for this server. You will receive a URL in the response body for that RTM connection.
+
+You can start and stop the RTM server using the same access token. These methods provide a good way to test reconnection attempts by your bot as well as let you bootstrap and clean up after your tests. While you can start an RTM server explicitly in your tests, there is no need to do this if you call the `rtm.start` API method, as this will create a server for you.
+
 ## API
 
 ### `require('slack-mock')`: `function(config)`
@@ -308,12 +316,16 @@ bots or simulating bots that are connected to the same team. Returns an immediat
 - `send`: `function(message, client)` Sends a message from Slack to a connected client (bot).
 Returns an immediately resolved Promise for easy chaining.
 
-- `reset`: `function()` Clears the `rtm.calls` array and closes connections to all connected clients.
+- `reset`: `function()` Clears the `rtm.calls` array.
 
 - `calls`: `Array` An array of payloads received by the RTM API from your Slack app.
   - `message` The message that was received by the RTM API as an Object.
-  - `client` A reference to the websocket client that received the payload.
+  - `token` The token used in this message. This is the same token in your `message` payload. It can be used to call `startServer` and `stopServer`.
   - `rawMessage` The original String message received by the RTM API. Good for troubleshooting.
+  
+- `startServer`: `function(token)` Given the access token your bot will pass in messages, will start a web socket server. A web socket server will automatically be created for you when you call `https://slack.com/api/rtm.start` using the token you pass in the request.
+
+- `stopServer`: `function(token)` Given the access token your bot has passed in messages, will close the associated websocket server. This is handy for testing reconnection strategies by stopping the server, thus forcing a disconnect from your bot, then starting the server. It can also be used to clean up after a series of tests. 
 
 ---
 
@@ -351,9 +363,15 @@ The `web` object receives requests to the Slack Web API and responds with mocked
 This mock can be used both for the Web API and the OAuth endpoint (`https://slack.com/oauth/authorize`). 
 It supports both GET and POST requests to all endpoints.
 
+The `https://slack.com/api/rtm.start` call requires a `token` parameter either as a query parameter or in the POST body. This will be used
+to create an RTM server. See the [RTM docs](#instancertm-rtm) for more information.
+
 - `addResponse`: `function(opts)` Queues a response payload that Slack Mock will use to respond upon
 receiving a request to a Web API endpoint. Endpoints without a custom response will return 200 `{ok: true}`.
-This method can be called multiple times per endpoint. Responses will be used in a FIFO order. Options are: 
+A `url` parameter will be added to all responses from the `https://slack.com/api/rtm.start` method if the body
+contains `ok: true`. 
+
+  This method can be called multiple times per endpoint. Responses will be used in a FIFO order. Options are: 
   - `url` (String, optional) Web API URL your app will be POSTing to.
   - `status` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
   - `body` (Object, optional) The response body to reply with. Defaults to `{ok: true}`

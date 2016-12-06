@@ -7,6 +7,7 @@ const request = require('request')
 
 describe('slack-app', function () {
   let slackMock
+  const botToken = 'xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT'
 
   before(function () {
     // wait for bot to get bootstrapped
@@ -15,6 +16,10 @@ describe('slack-app', function () {
 
     slackMock.reset()
     require('../slack-app')
+  })
+
+  after(function () {
+    return slackMock.rtm.stopServer(botToken)
   })
 
   it('should start an rtm connection after the oauth flow', function (done) {
@@ -29,7 +34,7 @@ describe('slack-app', function () {
         team_id: 'XXXXXXXXXX',
         bot: {
           bot_user_id: 'UTTTTTTTTTTR',
-          bot_access_token: 'xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT'
+          bot_access_token: botToken
         }
       }
     })
@@ -58,12 +63,17 @@ describe('slack-app', function () {
       }
     }, (err) => {
       if (err) {
-        return console.log(err)
+        return done(err)
       }
 
       return delay(250) // wait for oauth flow to complete, rtm to be established
         .then(() => {
-          return slackMock.rtm.send({type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'}, slackMock.rtm.clients[slackMock.rtm.clients.length - 1])
+          return slackMock.rtm.send({
+            token: botToken,
+            type: 'message',
+            channel: 'mockChannel',
+            user: 'usr',
+            text: 'hello'})
         })
         .then(delay(20))
         .then(() => {

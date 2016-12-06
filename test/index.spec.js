@@ -52,11 +52,11 @@ describe('slack-mock', function () {
 
     rtmMock = {
       _: { init: sinon.stub() },
-      broadcast: sinon.stub(),
       send: sinon.stub(),
       reset: sinon.stub(),
       calls: [],
-      clients: []
+      stopServer: sinon.stub(),
+      startServer: sinon.stub()
     }
 
     slashCommandsMock = {
@@ -150,12 +150,12 @@ describe('slack-mock', function () {
     })
 
     it('should expose rtm api', function () {
-      expect(instance.rtm).to.have.keys(['broadcast', 'send', 'reset', 'calls', 'clients'])
-      expect(instance.rtm.broadcast, 'broadcast').to.equal(rtmMock.broadcast)
+      expect(instance.rtm).to.have.keys(['send', 'reset', 'calls', 'stopServer', 'startServer'])
       expect(instance.rtm.send, 'send').to.equal(rtmMock.send)
       expect(instance.rtm.reset, 'reset').to.equal(rtmMock.reset)
       expect(instance.rtm.calls, 'calls').to.equal(rtmMock.calls)
-      expect(instance.rtm.clients, 'clients').to.equal(rtmMock.clients)
+      expect(instance.rtm.stopServer, 'stopServer').to.equal(rtmMock.stopServer)
+      expect(instance.rtm.startServer, 'startServer').to.equal(rtmMock.startServer)
     })
 
     it('should expose slash commands api', function () {

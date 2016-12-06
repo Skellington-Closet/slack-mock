@@ -8,7 +8,7 @@ A Slack API mocker for all your Slack bot and Slack app integration tests.
 
 ## Mock All Slack APIs
 
-Slack Mock will mock all seven (yes, seven!) ways of pushing data into and pulling data from Slack. You can use it to mock calls to 
+Slack Mock will mock all seven ways of pushing data into and pulling data from Slack. You can use it to mock calls to 
 - [the Web API](https://api.slack.com/web)
 - [the RTM API](https://api.slack.com/rtm)
 - [the Events API](https://api.slack.com/events-api)
@@ -19,17 +19,17 @@ Slack Mock will mock all seven (yes, seven!) ways of pushing data into and pulli
 
 You can use your API calls as is without changing any URLs or tokens. Slack Mock will capture all outbound HTTP requests to `https://slack.com` and `https://hooks.slack.com`, so Slack will never receive your API calls. 
 
-You can inspect all outbound requests and trigger incoming requests to make sure your bot is doing the right thing.
+With Slack-Mock you can inspect all outbound requests and trigger incoming requests to make sure your bot is doing the right thing.
 
 ## No Magic Included
 
 OK, there's a little magic included in capturing HTTP requests, but that's it. No timeouts, magic promises, or events. Functional tests are hard, trying to make them easy with "convenience" abstractions that are out of your control only makes them harder.
 
-Functional test by their nature are asynchronous: you are inspecting from the outside an arbitrarily complex flow between at least two entities (your bot and the Slack API) and there is no guaranteed way to know when that flow is complete. Any attempt by this library to assume to signal the communication is complete will be wrong some of the time, and just cause you frustration.
+Functional test by their nature are testing a closed system: you are inspecting from the outside a complex flow between at least two entities (your bot and the Slack API) and there is no guaranteed way to know when that flow is complete by observing from the outside. Any attempt to guess when the communication is complete will be wrong some of the time and just cause you frustration.
 
 That's why Slack Mock provides simple, synchronous methods to queue, trigger, and inspect messages to and from Slack. No magic included.
 
-To write a Slack Mock integration test queue up responses from Slack to your bot, then use Slack Mock to send a message from Slack to your bot to trigger a bot action, wait some time, then assert that your bot made the correct calls to Slack in order. How long do you wait? It depends on what your bot is doing. Play around a little and see what works. I find a 50 millisecond wait is enough for simple flows. 
+To write a Slack Mock integration test queue up responses from Slack to your bot, then use Slack Mock to send a message from Slack to your bot to trigger a bot action, wait some time, then assert that your bot made the correct calls to Slack in order. How long do you wait? It depends on what your bot is doing. Play around a little and see what works. I find a 50 millisecond wait is more than enough for most flows. 
 
 ## Usage
 
@@ -91,7 +91,7 @@ return slackMock.outgoingWebhooks.send('http://localhost:9000/outgoing', payload
 ### RTM
 
 ```js
-return slackMock.rtm.send({type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'}, slackMock.rtm.clients[slackMock.rtm.clients.length - 1])
+return slackMock.rtm.send({token: 'abc123', type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'})
   .then(delay(50))
   .then(() => {
     expect(slackMock.rtm.calls).to.have.length(1)
@@ -119,6 +119,8 @@ return slackMock.slashCommands.send('http://localhost:9000/slash', payload)
 ### OAuth (Web + RTM API)
 
 ```js
+const botToken = 'xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT'
+
 slackMock.web.addResponse({
   url: 'https://slack.com/api/oauth.access',
   status: 200,
@@ -129,7 +131,7 @@ slackMock.web.addResponse({
     team_id: 'Tmock',
     bot: {
       bot_user_id: 'Bmock',
-      bot_access_token: 'xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT'
+      bot_access_token: botToken
     }
   }
 })
@@ -163,7 +165,7 @@ request({
 
   return delay(250) // wait for oauth flow to complete, rtm to be established
     .then(() => {
-      return slackMock.rtm.send({type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'}, slackMock.rtm.clients[slackMock.rtm.clients.length - 1])
+      return slackMock.rtm.send({token: botToken, type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'})
     })
     .then(delay(20))
     .then(() => {
@@ -179,7 +181,7 @@ request({
 
 Slack Mock will intercept all requests to `https://slack.com` and `https://hooks.slack.com`. There's no need to change any URLs in your bot.
 
-General notes on API methods. Not every API wrapper supports every method, see the API docs below:
+Here are the method conventions. Not every API wrapper supports each of these methods, see the [API docs](#api) below:
 - `addResponse` will add the next response returned. You can call mutlitple times to queue responses. If you set a `url` option, then the response will only be returned for that url. URL specific responses take precedence over unspecified responses
 - `calls` will be in order received and always contain params, headers, and url. Params contain both query params and body properties.
 - `reset` will always clear calls and any queued responses you have.
@@ -313,10 +315,10 @@ The `rtm` object mocks sending and receiving payloads from the Slack RTM API.
 - `broadcast`: `function(message)` Broadcasts a message from Slack to all connected clients (bots). Good for single team 
 bots or simulating bots that are connected to the same team. Returns an immediately resolved Promise for easy chaining.
 
-- `send`: `function(message, client)` Sends a message from Slack to a connected client (bot).
-Returns an immediately resolved Promise for easy chaining.
+- `send`: `function(message, client)` Returns a promise. Sends a message from Slack to a connected client (bot).
+Returns a Promise for easy chaining.
 
-- `reset`: `function()` Clears the `rtm.calls` array.
+- `reset`: `function()` Clears the `rtm.calls` array. Reset will not stop the RTM servers or close any connections. To close the RTM connection to your bot, use the `stopServer` method.
 
 - `calls`: `Array` An array of payloads received by the RTM API from your Slack app.
   - `message` The message that was received by the RTM API as an Object.
@@ -325,7 +327,7 @@ Returns an immediately resolved Promise for easy chaining.
   
 - `startServer`: `function(token)` Given the access token your bot will pass in messages, will start a web socket server. A web socket server will automatically be created for you when you call `https://slack.com/api/rtm.start` using the token you pass in the request.
 
-- `stopServer`: `function(token)` Given the access token your bot has passed in messages, will close the associated websocket server. This is handy for testing reconnection strategies by stopping the server, thus forcing a disconnect from your bot, then starting the server. It can also be used to clean up after a series of tests. 
+- `stopServer`: `function(token)` Returns a promise. Given the access token your bot has passed in messages, will close the associated websocket server. This is handy for testing reconnection strategies by stopping the server, thus forcing a disconnect from your bot, then starting the server. It can also be used to clean up after a series of tests. 
 
 ---
 

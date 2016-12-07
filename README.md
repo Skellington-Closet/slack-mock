@@ -315,8 +315,8 @@ The `rtm` object mocks sending and receiving payloads from the Slack RTM API.
 - `broadcast`: `function(message)` Broadcasts a message from Slack to all connected clients (bots). Good for single team 
 bots or simulating bots that are connected to the same team. Returns an immediately resolved Promise for easy chaining.
 
-- `send`: `function(message, client)` Returns a promise. Sends a message from Slack to a connected client (bot).
-Returns a Promise for easy chaining.
+- `send`: `function(token, message)` Returns a promise. Sends a message from Slack to the bot that connected using the 
+passed authentication token.
 
 - `reset`: `function()` Clears the `rtm.calls` array. Reset will not stop the RTM servers or close any connections. To close the RTM connection to your bot, use the `stopServer` method.
 

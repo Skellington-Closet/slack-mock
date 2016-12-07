@@ -52,14 +52,8 @@ rtm.reset = function () {
   rtm.calls.splice(0, rtm.calls.length)
 }
 
-rtm.send = function (message) {
+rtm.send = function (token, message) {
   return new Promise((resolve, reject) => {
-    const token = message.token
-
-    if (!token) {
-      return reject(new Error('token is a required parameter of message'))
-    }
-
     const wss = wssServers.get(token)
 
     if (!wss) {

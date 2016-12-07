@@ -68,8 +68,7 @@ describe('slack-app', function () {
 
       return delay(250) // wait for oauth flow to complete, rtm to be established
         .then(() => {
-          return slackMock.rtm.send({
-            token: botToken,
+          return slackMock.rtm.send(botToken, {
             type: 'message',
             channel: 'mockChannel',
             user: 'usr',

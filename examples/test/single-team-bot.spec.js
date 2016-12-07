@@ -42,8 +42,7 @@ describe('single team bot', function () {
   })
 
   it('should respond to hello with GO CUBS', function () {
-    return slackMock.rtm.send({
-      token: token,
+    return slackMock.rtm.send(token, {
       type: 'message',
       channel: 'mockChannel',
       user: 'usr',
@@ -57,8 +56,7 @@ describe('single team bot', function () {
   })
 
   it('should respond to howdy with GO TRIBE', function () {
-    return slackMock.rtm.send({
-      token: token,
+    return slackMock.rtm.send(token, {
       type: 'message',
       channel: 'mockChannel',
       user: 'usr',

@@ -23,9 +23,9 @@ With Slack-Mock you can inspect all outbound requests and trigger incoming reque
 
 ## No Magic Included
 
-OK, there's a little magic included in capturing HTTP requests, but that's it. No timeouts, magic promises, or events. Functional tests are hard, trying to make them easy with "convenience" abstractions that are out of your control only makes them harder.
+OK, there's a little magic included in capturing HTTP requests, but that's it. No timeouts, magic promises, or events. Integration tests are hard, trying to make them easy with "convenience" abstractions that are out of your control only makes them harder.
 
-Functional test by their nature are testing a closed system: you are inspecting from the outside a complex flow between at least two entities (your bot and the Slack API) and there is no guaranteed way to know when that flow is complete by observing from the outside. Any attempt to guess when the communication is complete will be wrong some of the time and just cause you frustration.
+Integration test by their nature are testing a closed system: you are inspecting from the outside a complex flow between at least two entities (your bot and the Slack API) and there is no guaranteed way to know when that flow is complete by observing from the outside. Any attempt to guess when the communication is complete will be wrong some of the time and just cause you frustration.
 
 That's why Slack Mock provides simple, synchronous methods to queue, trigger, and inspect messages to and from Slack. No magic included.
 
@@ -165,7 +165,7 @@ request({
 
   return delay(250) // wait for oauth flow to complete, rtm to be established
     .then(() => {
-      return slackMock.rtm.send({token: botToken, type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'})
+      return slackMock.rtm.send(botToken, {type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'})
     })
     .then(delay(20))
     .then(() => {
@@ -225,16 +225,14 @@ The configured instance of the Slack Mock `slackMock.instance` object. This is t
 The `events` object mocks sending payloads from the Slack Events API to your Slack App.
 
 - `send`: `function(targetUrl, body)` Sends an HTTP request from the Events API to your Slack App target URL.
-The body will include a `response_url` parameter. Returns an immediately resolved Promise for easy chaining.
+Returns an immediately resolved Promise for easy chaining.
 
 - `reset`: `function()` Empties the `events.calls` array.
 
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Events API POST.
-This includes both responses to the original Events API request and requests to the `response_url`.
   - `url` The url of the call that was intercepted.
   - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object.
   - `headers` The headers of the intercepted request as an Object.
-  - `statusCode` The status code of the intercepted request.
 
 ---
 

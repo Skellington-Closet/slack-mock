@@ -165,7 +165,7 @@ request({
 
   return delay(250) // wait for oauth flow to complete, rtm to be established
     .then(() => {
-      return slackMock.rtm.send({token: botToken, type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'})
+      return slackMock.rtm.send(botToken, {type: 'message', channel: 'mockChannel', user: 'usr', text: 'hello'})
     })
     .then(delay(20))
     .then(() => {
@@ -225,16 +225,14 @@ The configured instance of the Slack Mock `slackMock.instance` object. This is t
 The `events` object mocks sending payloads from the Slack Events API to your Slack App.
 
 - `send`: `function(targetUrl, body)` Sends an HTTP request from the Events API to your Slack App target URL.
-The body will include a `response_url` parameter. Returns an immediately resolved Promise for easy chaining.
+Returns an immediately resolved Promise for easy chaining.
 
 - `reset`: `function()` Empties the `events.calls` array.
 
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Events API POST.
-This includes both responses to the original Events API request and requests to the `response_url`.
   - `url` The url of the call that was intercepted.
   - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object.
   - `headers` The headers of the intercepted request as an Object.
-  - `statusCode` The status code of the intercepted request.
 
 ---
 

@@ -22,7 +22,8 @@ events.send = function (target, data) {
 
     events.calls.push({
       url: target,
-      body: body,
+      params: body,
+      body: body, // remove in next major version
       headers: res.headers,
       statusCode: res.statusCode
     })

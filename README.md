@@ -231,8 +231,9 @@ Returns an immediately resolved Promise for easy chaining.
 
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Events API POST.
   - `url` The url of the call that was intercepted.
-  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object.
-  - `headers` The headers of the intercepted request as an Object.
+  - `params` The response body as an Object.
+  - `headers` The headers of the intercepted response as an Object.
+  - `statusCode` The status code of the intercepted response. Only captured for immediate responses, not when using the `response_url`.
 
 ---
 
@@ -254,8 +255,6 @@ will be used in a FIFO order. Options are:
   - `url` The url of the call that was intercepted.
   - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object.
   - `headers` The headers of the intercepted request as an Object.
-  - `statusCode` The status code of the intercepted request. Only captured for immediate responses, not when using the `response_url`.
-  - `type` Either `response` or `response_url`. Indicates how the call was intercepted.
 
 ---
 
@@ -282,7 +281,7 @@ This includes both responses to the original Slack interactive button request an
   `interactiveButtons.send`, for type `response_url` this will be the `response_url` from the payload sent to your Slack app.
   - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object.
   - `headers` The headers of the intercepted request as an Object.
-  - `statusCode` The status code of the intercepted request. Only captured for immediate responses, not when using the `response_url`.
+  - `statusCode` The status code of the intercepted response. Only captured for immediate responses, not when using the `response_url`.
   - `type` Either `response` or `response_url`. Indicates how the call was intercepted.
 
 ---
@@ -292,15 +291,15 @@ This includes both responses to the original Slack interactive button request an
 The `outgoingingWebhooks` object mocks sending and receiving payloads from Slack Outgoing Webhooks to your Slack App.
 
 - `send`: `function(targetUrl, body)` Sends an HTTP request from an Outgoing Webhook to your Slack App target URL.
-The body will include a `response_url` parameter Returns an immediately resolved Promise for easy chaining.
+Returns an immediately resolved Promise for easy chaining.
 
 - `reset`: `function()` Empties the `outgoingingWebhooks.calls` array.
 
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Outgoing Webhook POST.
   - `url` The url of the call that was intercepted.
-  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object.
+  - `params` The response body as an Object.
   - `headers` The headers of the intercepted request as an Object.
-  - `statusCode` The status code of the intercepted request.
+  - `statusCode` The status code of the intercepted response.
 
 ---
 
@@ -309,9 +308,6 @@ The body will include a `response_url` parameter Returns an immediately resolved
 The `rtm` object mocks sending and receiving payloads from the Slack RTM API.
 
 - `clients`: `Array` An array of websocket clients connected to the mock RTM server. Ordered by connection time.
-
-- `broadcast`: `function(message)` Broadcasts a message from Slack to all connected clients (bots). Good for single team 
-bots or simulating bots that are connected to the same team. Returns an immediately resolved Promise for easy chaining.
 
 - `send`: `function(token, message)` Returns a promise. Sends a message from Slack to the bot that connected using the 
 passed authentication token.
@@ -349,9 +345,10 @@ will be used in a FIFO order. Options are:
 - `calls`: `Array` An array of payloads received your from Slack app in response to an Slash Command POST.
 This includes both responses to the original Slash Command request and requests to the `response_url`.
   - `url` The url of the call that was intercepted.
-  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object.
+  - `params` The POST body merged with any query string parameters captured from the intercepted request as an Object OR
+  the response body, depending on whether this was a response or a new request using `response_url`.
   - `headers` The headers of the intercepted request as an Object.
-  - `statusCode` The status code of the intercepted request. Only captured for immediate responses, not for using the `response_url`.
+  - `statusCode` The status code of the intercepted response. Only captured for immediate responses, not for using the `response_url`.
   - `type` Either `response` or `response_url`. Indicates how the call was intercepted.
 
 ---

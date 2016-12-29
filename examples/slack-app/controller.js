@@ -5,7 +5,7 @@ const controller = module.exports
 
 // handles oauth callbacks
 controller.oauth = function (req, res) {
-  res.redirect('https://github.com/colestrode/skellington')
+  res.redirect('https://github.com/Skellington-Closet/skellington')
 
   api.oauth.access(req.query.code, (err, token) => {
     if (err) {

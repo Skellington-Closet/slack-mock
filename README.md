@@ -1,5 +1,7 @@
 # slack-mock
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Skellington-Closet/slack-mock.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/Skellington-Closet/slack-mock.svg?branch=master)](https://travis-ci.org/Skellington-Closet/slack-mock) 
 [![Coverage Status](https://coveralls.io/repos/github/Skellington-Closet/slack-mock/badge.svg?branch=master)](https://coveralls.io/github/Skellington-Closet/slack-mock?branch=master)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)

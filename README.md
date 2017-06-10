@@ -123,7 +123,7 @@ const botToken = 'xoxb-XXXXXXXXXXXX-TTTTTTTTTTTTTT'
 
 slackMock.web.addResponse({
   url: 'https://slack.com/api/oauth.access',
-  status: 200,
+  statusCode: 200,
   body: {
     access_token: 'xoxp-XXXXXXXX-XXXXXXXX-XXXXX',
     scope: 'incoming-webhook,commands,bot',
@@ -138,7 +138,7 @@ slackMock.web.addResponse({
 
 slackMock.web.addResponse({
   url: 'https://slack.com/api/rtm.start',
-  status: 200,
+  statusCode: 200,
   body: {
     ok: true,
     self: {
@@ -370,7 +370,7 @@ contains `ok: true`.
 
   This method can be called multiple times per endpoint. Responses will be used in a FIFO order. Options are: 
   - `url` (String, optional) Web API URL your app will be POSTing to.
-  - `status` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
+  - `statusCode` (Number, optional) The HTTP status code to reply with. Defaults to 200. 
   - `body` (Object, optional) The response body to reply with. Defaults to `{ok: true}`
   - `headers` (Object, optional) The HTTP headers to reply with. Defaults to `{}`
 

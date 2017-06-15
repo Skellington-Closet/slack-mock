@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.2](https://github.com/Skellington-Closet/slack-mock/compare/v1.0.1...v1.0.2)
+
+### Changed
+
+- Fixed wrong parameter name in README web API examples. Thanks for the PR [bmajz](https://github.com/bmajz)!
+
 ## [1.0.1](https://github.com/Skellington-Closet/slack-mock/compare/v1.0.0...v1.0.1)
 
 ### Added

@@ -22,11 +22,13 @@ module.exports = function (config) {
     logger.level = config.logLevel
   }
 
-  rtm._.init({rtmPort: config.rtmPort || 9001})
+  if (!config.disableRtm) {
+    rtm._.init({rtmPort: config.rtmPort || 9001})
+  }
 
   logger.info('slack-mock running')
 
-  module.exports.instance = {
+  const slackMockInstance = {
     events: {
       send: events.send,
       reset: events.reset,
@@ -47,13 +49,6 @@ module.exports = function (config) {
       send: outgoingWebhooks.send,
       reset: outgoingWebhooks.reset,
       calls: outgoingWebhooks.calls
-    },
-    rtm: {
-      send: rtm.send,
-      reset: rtm.reset,
-      calls: rtm.calls,
-      startServer: rtm.startServer,
-      stopServer: rtm.stopServer
     },
     slashCommands: {
       addResponse: slashCommands.addResponse,
@@ -76,6 +71,18 @@ module.exports = function (config) {
       web.reset()
     }
   }
+  
+  if (!config.disableRtm) {
+    slackMockInstance.rtm = {
+      send: rtm.send,
+      reset: rtm.reset,
+      calls: rtm.calls,
+      startServer: rtm.startServer,
+      stopServer: rtm.stopServer
+    };
+  }
+  
+  module.exports.instance = slackMockInstance;
 
   return module.exports.instance
 }

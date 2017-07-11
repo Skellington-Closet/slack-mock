@@ -31,6 +31,8 @@ That's why Slack Mock provides simple, synchronous methods to queue, trigger, an
 
 To write a Slack Mock integration test queue up responses from Slack to your bot, then use Slack Mock to send a message from Slack to your bot to trigger a bot action, wait some time, then assert that your bot made the correct calls to Slack in order. How long do you wait? It depends on what your bot is doing. Play around a little and see what works. I find a 50 millisecond wait is more than enough for most flows. 
 
+For Typescript users there are ambient tpyings included.
+
 ## Usage
 
 See the [examples tests](examples/test) for full examples of mocking both a single-team RTM bot and a full

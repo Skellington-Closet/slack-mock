@@ -210,6 +210,7 @@ the same instance.
 
 Config options are: 
   - `rtmPort` (number, optional) The port number the RTM websocket server will be started on. Defaults to 9001.
+  - `rtmDeny` (boolean, optional) If set to true no RTM websocket server will be started. Defaults to false.
   - `logLevel` (String, optional) The log level to use. One of `error`, `warn`, `info`, `verbose`, `debug`, or `silly`. Defaults to `info`.
 
 ---

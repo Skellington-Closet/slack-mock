@@ -17,38 +17,40 @@ nock(responseUrlBase)
 slashCommands.calls = []
 
 slashCommands.send = function (target, data) {
-  data.response_url = `${responseUrlBase}/${++commandNumber}`
+  return new Promise((resolve, reject) => {
+    data.response_url = `${responseUrlBase}/${++commandNumber}`
 
-  // slash commands use content-type application/x-www-form-urlencoded
-  request({
-    uri: target,
-    method: 'POST',
-    form: data
-  }, (err, res, body) => {
-    if (err) {
-      return logger.error(`error receiving response to slash-commands ${target}`, err)
-    }
-
-    if (typeof body === 'string') {
-      try {
-        body = JSON.parse(body)
-      } catch (e) {
-        logger.error('could not parse slash-commands response as json', e)
+        // slash commands use content-type application/x-www-form-urlencoded
+    request({
+      uri: target,
+      method: 'POST',
+      form: data
+    }, (err, res, body) => {
+      if (err) {
+        logger.error(`error receiving response to slash-commands ${target}`, err)
+        reject(err)
       }
-    }
 
-    logger.debug(`received response to slash-commands request: ${target}`)
+      if (typeof body === 'string') {
+        try {
+          body = JSON.parse(body)
+        } catch (e) {
+          logger.error('could not parse slash-commands response as json', e)
+        }
+      }
 
-    slashCommands.calls.push({
-      url: target,
-      body: body,
-      headers: res.headers,
-      statusCode: res.statusCode,
-      type: 'response'
+      logger.debug(`received response to slash-commands request: ${target}`)
+
+      slashCommands.calls.push({
+        url: target,
+        body: body,
+        headers: res.headers,
+        statusCode: res.statusCode,
+        type: 'response'
+      })
+      resolve(res)
     })
   })
-
-  return Promise.resolve()
 }
 
 slashCommands.addResponse = function (opts) {

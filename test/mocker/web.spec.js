@@ -104,6 +104,39 @@ describe('mocker: web', function () {
         }
       }
     })
+
+    it('should overide the rtm url rtm.connect', function (done) {
+      let token = 'not.real.token'
+
+      utilsMock.parseParams.returns({
+        token: token
+      })
+
+      request({
+        uri: 'https://slack.com/api/rtm.connect',
+        method: 'POST',
+        json: true,
+        body: {
+          token: token
+        }
+      }, afterPost)
+
+      function afterPost (err, res, body) {
+        if (err) return done(err)
+
+        try {
+          expect(rtmMock._.addToken).to.have.been.calledWith(token)
+
+          expect(body).to.deep.equal({
+            ok: true,
+            url: 'https://rtm.slack-mock'
+          })
+          done()
+        } catch (e) {
+          done(e)
+        }
+      }
+    })
   })
 
   describe('calls', function () {

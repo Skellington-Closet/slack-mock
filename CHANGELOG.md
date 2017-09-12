@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.1](https://github.com/Skellington-Closet/slack-mock/compare/v1.0.2...v1.1.0)
+
+### Changed
+
+- Starts RTM server on a web API request to `rtm.connect`. Thanks for the PR [Lowry99](https://github.com/Lowry99)!
+
 ## [1.0.2](https://github.com/Skellington-Closet/slack-mock/compare/v1.0.1...v1.0.2)
 
 ### Changed

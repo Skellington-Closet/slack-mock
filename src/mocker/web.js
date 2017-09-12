@@ -44,12 +44,12 @@ function reply (path, requestBody) {
   const response = customResponses.get('web', url)
   const responseBody = response[1]
 
-  if (/rtm\.start/.test(url) || (/rtm\.connect/.test(url)) && responseBody.ok) {
-    if (/rtm\.connect/.test(url)) {
-      logger.debug('overriding specified url for rtm.connect')
-    }
+  if (/rtm\.[start|connect]/.test(url) && responseBody.ok) {
+    logger.debug('overriding specified url for rtm')
+
     const rtmUrl = rtm._.addToken(params.token)
     responseBody.url = rtmUrl
   }
+
   return response
 }

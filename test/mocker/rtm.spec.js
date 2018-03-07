@@ -33,10 +33,13 @@ describe('mocker: rtm', function () {
       Server: sinon.stub()
     }
 
-    serverMock = 'server'
+    serverMock = {
+      close: sinon.stub().returns()
+    }
 
     expressAppMock = {
-      listen: sinon.stub().returns(serverMock)
+      listen: sinon.stub().returns(serverMock),
+      close: serverMock.close()
     }
 
     expressMock = sinon.stub().returns(expressAppMock)

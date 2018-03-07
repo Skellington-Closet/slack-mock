@@ -85,8 +85,7 @@ rtm.stopServer = function (token) {
   return new Promise((resolve, reject) => {
     const wss = wssServers.get(token)
     if (!wss) {
-      server.close()
-      return resolve()
+      return server.close(() => resolve())
     }
 
     wss.close((err) => {
@@ -97,8 +96,7 @@ rtm.stopServer = function (token) {
 
       logger.debug(`server ${token} closed`)
       wssServers.delete(token)
-      server.close()
-      resolve()
+      return server.close(() => resolve())
     })
   })
 }

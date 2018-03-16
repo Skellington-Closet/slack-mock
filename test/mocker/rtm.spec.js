@@ -33,7 +33,9 @@ describe('mocker: rtm', function () {
       Server: sinon.stub()
     }
 
-    serverMock = 'server'
+    serverMock = {
+      close: sinon.stub().yields()
+    }
 
     expressAppMock = {
       listen: sinon.stub().returns(serverMock)
@@ -254,6 +256,7 @@ describe('mocker: rtm', function () {
       return rtm.stopServer(token)
         .then(() => {
           expect(wsServerMock.close).to.have.been.called
+          expect(serverMock.close).to.have.been.called
         })
     })
 
@@ -272,6 +275,7 @@ describe('mocker: rtm', function () {
       return rtm.stopServer('notreal')
         .then(() => {
           expect(wsServerMock.close).not.to.have.been.called
+          expect(serverMock.close).to.have.been.called
         })
     })
 

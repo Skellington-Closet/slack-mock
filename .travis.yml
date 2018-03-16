@@ -1,8 +1,10 @@
 sudo: false
 language: node_js
+# test historically supported versions, lts, and current stable version
 node_js:
-  - "4"
-  - "5"
   - "6"
+  - "8"
+  - "lts/*"
+  - "node"
 install: npm install
 script: "npm run-script ci"

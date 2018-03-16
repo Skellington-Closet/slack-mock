@@ -88,6 +88,13 @@ describe('slack-mock', function () {
     it('should init the rtm mocker with default port', function () {
       mocker()
       expect(rtmMock._.init).to.be.calledWith({rtmPort: 9001})
+      expect(Object.keys(mocker.instance)).to.include('rtm')
+    })
+
+    it('should not init the rtm mocker when rtmDeny is true', function () {
+      mocker({rtmDeny: true})
+      expect(rtmMock._.init).to.have.not.been.called
+      expect(Object.keys(mocker.instance)).to.not.include('rtm')
     })
 
     it('should init the rtm mocker with passed port', function () {

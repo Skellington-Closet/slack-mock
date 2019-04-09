@@ -16,7 +16,7 @@ nock(responseUrlBase)
 
 slashCommands.calls = []
 
-slashCommands.send = function (target, data) {
+slashCommands.send = function (target, data, headers = {}) {
   return new Promise((resolve, reject) => {
     data.response_url = `${responseUrlBase}/${++commandNumber}`
 
@@ -24,7 +24,8 @@ slashCommands.send = function (target, data) {
     request({
       uri: target,
       method: 'POST',
-      form: data
+      form: data,
+      headers
     }, (err, res, body) => {
       if (err) {
         logger.error(`error receiving response to slash-commands ${target}`, err)

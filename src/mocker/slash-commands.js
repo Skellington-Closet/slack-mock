@@ -16,42 +16,47 @@ nock(responseUrlBase)
 
 slashCommands.calls = []
 
-slashCommands.send = function (target, data, headers = {}) {
-  return new Promise((resolve, reject) => {
-    data.response_url = `${responseUrlBase}/${++commandNumber}`
+slashCommands.prepare = function () {
+  const commandNumberForThisSend = ++commandNumber
+  const responseUrl = `${responseUrlBase}/${commandNumberForThisSend}`
+  return {
+    responseUrl,
+    send: (target, data, headers = {}) => new Promise((resolve, reject) => {
+      data.response_url = responseUrl
 
-        // slash commands use content-type application/x-www-form-urlencoded
-    request({
-      uri: target,
-      method: 'POST',
-      form: data,
-      headers
-    }, (err, res, body) => {
-      if (err) {
-        logger.error(`error receiving response to slash-commands ${target}`, err)
-        reject(err)
-      }
-
-      if (typeof body === 'string') {
-        try {
-          body = JSON.parse(body)
-        } catch (e) {
-          logger.error('could not parse slash-commands response as json', e)
+      // slash commands use content-type application/x-www-form-urlencoded
+      request({
+        uri: target,
+        method: 'POST',
+        form: data,
+        headers
+      }, (err, res, body) => {
+        if (err) {
+          logger.error(`error receiving response to slash-commands ${target}`, err)
+          reject(err)
         }
-      }
 
-      logger.debug(`received response to slash-commands request: ${target}`)
+        if (typeof body === 'string') {
+          try {
+            body = JSON.parse(body)
+          } catch (e) {
+            logger.error('could not parse slash-commands response as json', e)
+          }
+        }
 
-      slashCommands.calls.push({
-        url: target,
-        body: body,
-        headers: res.headers,
-        statusCode: res.statusCode,
-        type: 'response'
+        logger.debug(`received response to slash-commands request: ${target}`)
+
+        slashCommands.calls.push({
+          url: target,
+          body: body,
+          headers: res.headers,
+          statusCode: res.statusCode,
+          type: 'response'
+        })
+        resolve(res)
       })
-      resolve(res)
     })
-  })
+  }
 }
 
 slashCommands.addResponse = function (opts) {

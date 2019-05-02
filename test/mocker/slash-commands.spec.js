@@ -98,7 +98,7 @@ describe('mocker: slash commands', function () {
       requestMock.yields(error)
 
       return slashCommands.send(target, data)
-        .then(() => {
+        .catch(() => {
           expect(slashCommands.calls).to.have.length(0)
           expect(loggerMock.error).to.have.been.called
         })

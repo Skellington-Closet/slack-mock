@@ -52,7 +52,7 @@ module.exports = function (config) {
     },
     slashCommands: {
       addResponse: slashCommands.addResponse,
-      send: slashCommands.send,
+      prepare: slashCommands.prepare,
       reset: slashCommands.reset,
       calls: slashCommands.calls
     },

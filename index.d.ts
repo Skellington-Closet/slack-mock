@@ -3,6 +3,8 @@
 // Definitions by: Kris Kalavantavanich <https://github.com/kkalavantavanich>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.4
+// MIT License
+// Copyright (c) Microsoft Corporation. All rights reserved.
 
 import { IncomingHttpHeaders } from "http";
 import * as nock from "nock";
@@ -31,6 +33,7 @@ declare namespace SlackMock {
     interface ConfigOptions {
         rtmPort?: number;
         logLevel?: string;
+        disableRtm?: boolean;
     }
 
     // Events

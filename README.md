@@ -388,4 +388,19 @@ Each call will contain:
 
 Resets all mocks. A convenience method for calling reset on individual API mocks.
 
+# Typescript typings
+> `npm install --save @types/slack-mock`
 
+# Summary
+This package contains type definitions for slack-mock (https://github.com/Skellington-Closet/slack-mock).
+
+# Details
+Files were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/slack-mock
+
+Additional Details
+ * Last updated: Mon, 30 Jul 2018 23:12:12 GMT
+ * Dependencies: http, nock, url, ws
+ * Global values: none
+
+# Credits
+These definitions were written by Kris Kalavantavanich <https://github.com/kkalavantavanich>.

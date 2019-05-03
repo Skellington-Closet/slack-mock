@@ -10,6 +10,23 @@
     "ci": "npm test && cat ./coverage/lcov.info | coveralls"
   },
   "author": "",
+  "contributors": [
+    {
+      "name": "Cole Furfaro-Strode",
+      "url": "https://github.com/Skellington-Closet",
+      "githubUsername": "Skellington-Closet"
+    },
+    {
+      "name": "Kris Kalavantavanich",
+      "url": "https://github.com/kkalavantavanich",
+      "githubUsername": "kkalavantavanich"
+    },
+    {
+      "name": "Yousaf Nabi",
+      "url": "https://github.com/YOU54F",
+      "githubUsername": "YOU54F"
+    }
+  ],
   "license": "MIT",
   "engines": {
     "node": ">=6.0.0"

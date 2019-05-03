@@ -52,7 +52,7 @@ module.exports = function (config) {
     },
     slashCommands: {
       addResponse: slashCommands.addResponse,
-      prepare: slashCommands.prepare,
+      prepare: slashCommands.send,
       reset: slashCommands.reset,
       calls: slashCommands.calls
     },
@@ -71,7 +71,7 @@ module.exports = function (config) {
       web.reset()
     }
   }
-  
+
   if (!config.disableRtm) {
     slackMockInstance.rtm = {
       send: rtm.send,
@@ -79,10 +79,10 @@ module.exports = function (config) {
       calls: rtm.calls,
       startServer: rtm.startServer,
       stopServer: rtm.stopServer
-    };
+    }
   }
-  
-  module.exports.instance = slackMockInstance;
+
+  module.exports.instance = slackMockInstance
 
   return module.exports.instance
 }

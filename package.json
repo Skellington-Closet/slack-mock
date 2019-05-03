@@ -1,6 +1,6 @@
 {
   "name": "slack-mocker",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Slack API mocker",
   "main": "index.js",
   "scripts": {

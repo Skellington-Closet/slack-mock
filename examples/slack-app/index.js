@@ -2,7 +2,7 @@
 
 const express = require('express')
 const bodyParser = require('body-parser')
-const formParser = bodyParser.urlencoded({type: 'application/x-www-form-urlencoded', extended: false})
+const formParser = bodyParser.urlencoded({ type: 'application/x-www-form-urlencoded', extended: false })
 const app = express()
 const controller = require('./controller')
 
@@ -32,4 +32,3 @@ app.listen(9000, () => {
     }
   })
 })
-

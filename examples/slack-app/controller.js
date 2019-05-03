@@ -18,7 +18,7 @@ controller.oauth = function (req, res) {
 
 // handles slash command
 controller.slash = function (req, res) {
-  res.status(200).send({hello: 'world'})
+  res.status(200).send({ hello: 'world' })
 
   const response = {
     text: /hello/.test(req.body.text) ? 'GO CUBS' : 'GO TRIBE',
@@ -33,7 +33,7 @@ controller.slash = function (req, res) {
 }
 
 controller.outgoing = function (req, res) {
-  res.status(200).send({text: 'GO CUBS'})
+  res.status(200).send({ text: 'GO CUBS' })
 }
 
 controller.event = function (req, res) {
@@ -41,7 +41,7 @@ controller.event = function (req, res) {
 }
 
 controller.button = function (req, res) {
-  res.status(200).send({hello: 'world'})
+  res.status(200).send({ hello: 'world' })
 
   const response = {
     text: /hello/.test(req.body.text) ? 'GO CUBS' : 'GO TRIBE'

@@ -4,7 +4,7 @@ const Ws = require('ws')
 let lastMessageId = 0
 
 module.exports.getInstance = function (token, info) {
-  const rtm = new Ws(info.url, null, {agent: null})
+  const rtm = new Ws(info.url, null, { agent: null })
   const bot = {}
 
   bot.identity = {

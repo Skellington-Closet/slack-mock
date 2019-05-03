@@ -23,7 +23,7 @@ module.exports = function (config) {
   }
 
   if (!config.disableRtm) {
-    rtm._.init({rtmPort: config.rtmPort || 9001})
+    rtm._.init({ rtmPort: config.rtmPort || 9001 })
   }
 
   logger.info('slack-mock running')
@@ -52,7 +52,7 @@ module.exports = function (config) {
     },
     slashCommands: {
       addResponse: slashCommands.addResponse,
-      prepare: slashCommands.send,
+      send: slashCommands.send,
       reset: slashCommands.reset,
       calls: slashCommands.calls
     },

@@ -87,29 +87,29 @@ describe('slack-mock', function () {
   describe('init', function () {
     it('should init the rtm mocker with default port', function () {
       mocker()
-      expect(rtmMock._.init).to.be.calledWith({rtmPort: 9001})
+      expect(rtmMock._.init).to.be.calledWith({ rtmPort: 9001 })
     })
 
     it('should init the rtm mocker with passed port', function () {
-      mocker({rtmPort: 9002})
-      expect(rtmMock._.init).to.be.calledWith({rtmPort: 9002})
+      mocker({ rtmPort: 9002 })
+      expect(rtmMock._.init).to.be.calledWith({ rtmPort: 9002 })
     })
 
     it('should set the logger level', function () {
-      mocker({logLevel: 'debug'})
+      mocker({ logLevel: 'debug' })
       expect(loggerMock.level).to.equal('debug')
     })
 
     it('should return the same instance when called twice', function () {
       const instance1 = mocker()
-      const instance2 = mocker({logLevel: 'debug', rtmPort: 9002})
+      const instance2 = mocker({ logLevel: 'debug', rtmPort: 9002 })
 
       expect(instance1).to.equal(instance2)
 
       // don't reconfigure
       expect(loggerMock.level).not.to.exist
-      expect(rtmMock._.init).to.be.calleOnce
-      expect(rtmMock._.init).to.be.calledWith({rtmPort: 9001})
+      expect(rtmMock._.init).to.be.calledOnce
+      expect(rtmMock._.init).to.be.calledWith({ rtmPort: 9001 })
     })
   })
 

@@ -35,7 +35,7 @@ describe('utils', function () {
     loggerMock.debug.reset()
 
     qsMock.parse.reset()
-    qsMock.parse.returns({parsed: true})
+    qsMock.parse.returns({ parsed: true })
   })
 
   describe('parseParams', function () {
@@ -44,13 +44,13 @@ describe('utils', function () {
     })
 
     it('should return the body', function () {
-      const result = utils.parseParams('/heisenberg', {walter: 'white'})
+      const result = utils.parseParams('/heisenberg', { walter: 'white' })
       expect(result).to.have.keys(['walter'])
       expect(result.walter).to.equal('white')
     })
 
     it('should merge query parameters with body', function () {
-      const result = utils.parseParams('/heisenberg?the=one&who=knocks', {walter: 'white'})
+      const result = utils.parseParams('/heisenberg?the=one&who=knocks', { walter: 'white' })
 
       expect(qsMock.parse).to.have.been.calledWith('the=one&who=knocks')
       expect(result).to.have.keys(['walter', 'parsed'])
@@ -59,14 +59,14 @@ describe('utils', function () {
     })
 
     it('should parse application/x-www-form-urlencoded body', function () {
-      qsMock.parse.onCall(0).returns({first: true})
-      qsMock.parse.onCall(1).returns({second: true})
+      qsMock.parse.onCall(0).returns({ first: true })
+      qsMock.parse.onCall(1).returns({ second: true })
 
       const result = utils.parseParams('/heisenberg?the=one&who=knocks', 'walter=white')
 
       expect(qsMock.parse).to.have.been.calledWith('the=one&who=knocks')
       expect(qsMock.parse).to.have.been.calledWith('walter=white')
-      expect(result).to.deep.equal({first: true, second: true})
+      expect(result).to.deep.equal({ first: true, second: true })
     })
   })
 })

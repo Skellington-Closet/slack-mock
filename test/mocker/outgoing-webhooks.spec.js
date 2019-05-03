@@ -34,10 +34,10 @@ describe('mocker: outgoing webhooks', function () {
 
   beforeEach(function () {
     target = 'http://gus.fring'
-    data = {ding: 'ding'}
+    data = { ding: 'ding' }
 
-    bodyMock = {walter: 'white'}
-    headersMock = {channel: 'AMC'}
+    bodyMock = { walter: 'white' }
+    headersMock = { channel: 'AMC' }
     resMock = {
       headers: headersMock,
       statusCode: 200

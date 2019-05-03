@@ -31,6 +31,6 @@ function apiRequest (method, data, cb) {
     method: 'GET',
     uri: `https://slack.com/api/${method}`,
     json: true,
-    qs: _.merge({token: token}, data)
+    qs: _.merge({ token: token }, data)
   }, cb)
 }

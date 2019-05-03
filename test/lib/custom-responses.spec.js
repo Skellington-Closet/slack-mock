@@ -105,7 +105,7 @@ describe('custom responses', function () {
       }
 
       customResponses.set('web', opts)
-      expect(customResponses.get('web', 'set.walter.white')[1]).to.deep.equal({ok: true})
+      expect(customResponses.get('web', 'set.walter.white')[1]).to.deep.equal({ ok: true })
     })
 
     it('should queue multiple responses', function () {
@@ -168,7 +168,7 @@ describe('custom responses', function () {
     })
 
     it('should get a default response for type web', function () {
-      expect(customResponses.get('web', 'get.walter.white')).to.deep.equal([200, {ok: true}, {}])
+      expect(customResponses.get('web', 'get.walter.white')).to.deep.equal([200, { ok: true }, {}])
     })
 
     it('should get queued response', function () {

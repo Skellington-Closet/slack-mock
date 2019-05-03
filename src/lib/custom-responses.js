@@ -26,17 +26,17 @@ customResponses.set = function (type, opts) {
 
   urlResponses.push({
     statusCode: opts.statusCode || 200,
-    body: opts.body || (type === 'web' ? {ok: true} : 'OK'),
+    body: opts.body || (type === 'web' ? { ok: true } : 'OK'),
     headers: opts.headers || {}
   })
 }
 
 customResponses.get = function (type, url) {
-  const defaultResponse = {statusCode: 200, body: 'OK', headers: {}}
+  const defaultResponse = { statusCode: 200, body: 'OK', headers: {} }
   let response = defaultResponse
 
   if (type === 'web') {
-    defaultResponse.body = {ok: true}
+    defaultResponse.body = { ok: true }
   }
 
   let urlResponses = allResponses.get(type).get(url)

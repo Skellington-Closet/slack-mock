@@ -18,8 +18,8 @@ describe('mocker: events', function () {
   let data
 
   beforeEach(function () {
-    bodyMock = {walter: 'white'}
-    headersMock = {channel: 'AMC'}
+    bodyMock = { walter: 'white' }
+    headersMock = { channel: 'AMC' }
     resMock = {
       headers: headersMock,
       statusCode: 200
@@ -39,7 +39,7 @@ describe('mocker: events', function () {
     })
 
     target = 'http://gus.fring'
-    data = {ding: 'ding'}
+    data = { ding: 'ding' }
 
     events.reset()
   })

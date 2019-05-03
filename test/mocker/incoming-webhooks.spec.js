@@ -46,7 +46,7 @@ describe('mocker: incoming webhooks', function () {
     loggerMock.debug.reset()
 
     utilsMock.parseParams.reset()
-    utilsMock.parseParams.returns({parsed: 'body'})
+    utilsMock.parseParams.returns({ parsed: 'body' })
 
     customResponsesMock.get.reset()
     customResponsesMock.set.reset()
@@ -76,8 +76,8 @@ describe('mocker: incoming webhooks', function () {
       const opts = {
         url: url,
         statusCode: 500,
-        body: {not: 'ok'},
-        headers: {walter: 'white'}
+        body: { not: 'ok' },
+        headers: { walter: 'white' }
       }
 
       incomingWebhooks.addResponse(opts)
@@ -99,13 +99,13 @@ describe('mocker: incoming webhooks', function () {
       }
 
       sendToUrl(url, body, () => {
-        expect(utilsMock.parseParams).to.have.been.calledWith('/calls', {walter: 'white'})
+        expect(utilsMock.parseParams).to.have.been.calledWith('/calls', { walter: 'white' })
         expect(incomingWebhooks.calls).to.have.length(1)
 
         const firstCall = incomingWebhooks.calls[0]
         expect(firstCall).to.have.keys(['url', 'params', 'headers'])
         expect(firstCall.url).to.equal(url)
-        expect(firstCall.params).to.deep.equal({parsed: 'body'})
+        expect(firstCall.params).to.deep.equal({ parsed: 'body' })
         expect(firstCall.headers).to.exist
 
         done()
@@ -125,7 +125,7 @@ describe('mocker: incoming webhooks', function () {
         expect(utilsMock.parseParams).to.have.been.calledWith('/calls', 'walter=white')
         expect(incomingWebhooks.calls).to.have.length(1)
         const firstCall = incomingWebhooks.calls[0]
-        expect(firstCall.params).to.deep.equal({parsed: 'body'})
+        expect(firstCall.params).to.deep.equal({ parsed: 'body' })
 
         done()
       })

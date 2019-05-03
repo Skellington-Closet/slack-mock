@@ -84,7 +84,7 @@ describe('mocker: rtm', function () {
 
   describe('init', function () {
     it('should start the express server', function () {
-      rtm._.init({rtmPort: 9000})
+      rtm._.init({ rtmPort: 9000 })
       expect(expressAppMock.listen).to.have.been.calledWith(9000)
     })
   })
@@ -95,7 +95,7 @@ describe('mocker: rtm', function () {
     beforeEach(function () {
       token = 'abc123'
       // create server
-      rtm._.init({rtmPort: 9001})
+      rtm._.init({ rtmPort: 9001 })
     })
 
     afterEach(function () {
@@ -137,7 +137,7 @@ describe('mocker: rtm', function () {
       })
 
       it('should record a message to the client', function () {
-        const message = JSON.stringify({hello: 'world', token: token})
+        const message = JSON.stringify({ hello: 'world', token: token })
         messageCb(message)
 
         expect(rtm.calls).to.have.length(1)
@@ -164,19 +164,19 @@ describe('mocker: rtm', function () {
 
     beforeEach(function () {
       token = 'crystalbluepersuation'
-      rtm._.init({rtmPort: 9001}) // create server
+      rtm._.init({ rtmPort: 9001 }) // create server
       rtm._.addToken(token) // create server
     })
 
     it('should send a message', function () {
-      return rtm.send(token, {walter: 'white'})
+      return rtm.send(token, { walter: 'white' })
         .then(() => {
           expect(wsClientMock.send).to.have.been.calledWith(`{"walter":"white"}`)
         })
     })
 
     it('should reject if there is no server for a token', function () {
-      return rtm.send('capncook', {walter: 'white'})
+      return rtm.send('capncook', { walter: 'white' })
         .then(() => {
           throw new Error('expected promise to fail.')
         })
@@ -191,7 +191,7 @@ describe('mocker: rtm', function () {
       sinon.stub(JSON, 'stringify')
       JSON.stringify.throws(parseError)
 
-      return rtm.send(token, {walter: 'white'})
+      return rtm.send(token, { walter: 'white' })
         .then(() => {
           throw new Error('expected promise to fail.')
         })
@@ -209,7 +209,7 @@ describe('mocker: rtm', function () {
       const sendError = new Error('could not send')
       wsClientMock.send.yields(sendError)
 
-      return rtm.send(token, {walter: 'white'})
+      return rtm.send(token, { walter: 'white' })
         .then(() => {
           throw new Error('expected promise to fail.')
         })

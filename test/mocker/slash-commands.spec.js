@@ -49,10 +49,10 @@ describe('mocker: slash commands', function () {
 
   beforeEach(function () {
     target = 'http://gus.fring'
-    data = {ding: 'ding'}
+    data = { ding: 'ding' }
 
-    bodyMock = {walter: 'white'}
-    headersMock = {channel: 'AMC'}
+    bodyMock = { walter: 'white' }
+    headersMock = { channel: 'AMC' }
     resMock = {
       headers: headersMock,
       statusCode: 200
@@ -62,7 +62,7 @@ describe('mocker: slash commands', function () {
     requestMock.yields(null, resMock, bodyMock)
 
     utilsMock.parseParams.reset()
-    utilsMock.parseParams.returns({parsed: 'body'})
+    utilsMock.parseParams.returns({ parsed: 'body' })
 
     customResponsesMock.get.reset()
     customResponsesMock.set.reset()
@@ -125,7 +125,7 @@ describe('mocker: slash commands', function () {
 
         // one call for the immediate response, one for the delayed response_url request
         expect(slashCommands.calls).to.have.length(2)
-        expect(utilsMock.parseParams).to.have.been.calledWithMatch(/\/\d/, {jesse: 'pinkman'})
+        expect(utilsMock.parseParams).to.have.been.calledWithMatch(/\/\d/, { jesse: 'pinkman' })
         expect(customResponsesMock.get).to.have.been.calledWith('slash-commands')
 
         const secondCall = slashCommands.calls[1]
@@ -133,7 +133,7 @@ describe('mocker: slash commands', function () {
         expect(secondCall).to.have.keys(['url', 'params', 'headers', 'type'])
 
         expect(secondCall.url).to.equal(requestData.response_url)
-        expect(secondCall.params).to.deep.equal({parsed: 'body'})
+        expect(secondCall.params).to.deep.equal({ parsed: 'body' })
         expect(secondCall.type).to.equal('response_url')
 
         done()
@@ -163,7 +163,7 @@ describe('mocker: slash commands', function () {
         expect(customResponsesMock.get).to.have.been.calledWith('slash-commands')
 
         const secondCall = slashCommands.calls[1]
-        expect(secondCall.params).to.deep.equal({parsed: 'body'})
+        expect(secondCall.params).to.deep.equal({ parsed: 'body' })
         done()
       }
     })
@@ -180,8 +180,8 @@ describe('mocker: slash commands', function () {
       const opts = {
         url: url,
         statusCode: 500,
-        body: {not: 'ok'},
-        headers: {walter: 'white'}
+        body: { not: 'ok' },
+        headers: { walter: 'white' }
       }
 
       slashCommands.addResponse(opts)

@@ -72,7 +72,7 @@ describe('slack-app', function () {
             type: 'message',
             channel: 'mockChannel',
             user: 'usr',
-            text: 'hello'})
+            text: 'hello' })
         })
         .then(delay(20))
         .then(() => {
@@ -109,7 +109,7 @@ describe('slack-app', function () {
       .then(() => {
         expect(slackMock.slashCommands.calls).to.have.length(2)
 
-        const responseUrlCall = _.find(slackMock.slashCommands.calls, {type: 'response_url'})
+        const responseUrlCall = _.find(slackMock.slashCommands.calls, { type: 'response_url' })
         expect(responseUrlCall.params.text).to.equal('GO CUBS')
         expect(responseUrlCall.params.response_type).to.equal('ephemeral')
       })
@@ -170,14 +170,14 @@ describe('slack-app', function () {
       text: 'hello'
     }
 
-    slackMock.interactiveButtons.addResponse({statusCode: 201})
+    slackMock.interactiveButtons.addResponse({ statusCode: 201 })
 
     return slackMock.interactiveButtons.send('http://localhost:9000/button', command)
       .then(delay(75))
       .then(() => {
         expect(slackMock.interactiveButtons.calls).to.have.length(2)
 
-        const responseUrlCall = _.find(slackMock.interactiveButtons.calls, {type: 'response_url'})
+        const responseUrlCall = _.find(slackMock.interactiveButtons.calls, { type: 'response_url' })
         expect(responseUrlCall.params.text).to.equal('GO CUBS')
       })
   })

@@ -3,7 +3,7 @@
 const winston = require('winston')
 
 // log levels: error, warn, info, verbose, debug, silly
-module.exports = logger(new (winston.createLogger)({ // eslint-disable-line 
+module.exports = new (winston.createLogger)({ // eslint-disable-line 
   transports: [
     new (winston.transports.Console)({
       // handle logging uncaughtException
@@ -24,4 +24,4 @@ module.exports = logger(new (winston.createLogger)({ // eslint-disable-line
       }
     })
   ]
-}))
+})

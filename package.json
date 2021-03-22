@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "express": "^4.14.0",
-    "nock": "^9.0.2",
+    "nock": "^13.0.0",
     "qs": "^6.3.0",
     "request": "^2.79.0",
     "winston": "^2.3.0",

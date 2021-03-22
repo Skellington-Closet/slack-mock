@@ -67,7 +67,7 @@ describe('mocker: interactive buttons', function () {
     customResponsesMock.get.reset()
     customResponsesMock.set.reset()
     customResponsesMock.reset.reset()
-    customResponsesMock.get.returns(200, 'OK', {})
+    customResponsesMock.get.returns([200, 'OK', {}])
 
     loggerMock.error.reset()
     loggerMock.info.reset()

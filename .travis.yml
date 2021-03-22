@@ -2,8 +2,7 @@ sudo: false
 language: node_js
 # test historically supported versions, lts, and current stable version
 node_js:
-  - "6"
-  - "8"
+  - "10"
   - "lts/*"
   - "node"
 install: npm install
